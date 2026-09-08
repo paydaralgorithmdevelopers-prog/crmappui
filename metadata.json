@@ -1,0 +1,6 @@
+{
+  "name": "پایدار ERP - گروه‌بندی مشتریان",
+  "description": "سامانه پایدار ERP - ماژول مدیریت تجربه مشتری (CEM)، تعریف ساختار درختی گروه‌های هدف و فرم تعریف رسانه‌ها با تنظیم شاخص‌های کلیدی (KPI)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
