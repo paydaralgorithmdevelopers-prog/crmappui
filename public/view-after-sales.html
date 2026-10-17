@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نمایشگر سورس‌کد کامل خدمات پس از فروش (۴٬۷۱۳ خط کد)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+  <!-- PrismJS for syntax highlighting -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+  <style>
+    body { font-family: 'Vazirmatn', system-ui, sans-serif; }
+    pre[class*="language-"] {
+      direction: ltr !important;
+      text-align: left !important;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      border-radius: 12px;
+      max-height: 75vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-xl shadow-lg shadow-blue-500/20">
+        ⚡
+      </div>
+      <div>
+        <h1 class="text-base font-black text-white">سورس‌کد کامل ماژول خدمات پس از فروش</h1>
+        <p class="text-xs text-slate-400">۱۰ فایل کامپوننت React 19 + TypeScript + Tailwind CSS (مجموعاً ۴٬۷۱۳ خط)</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <a href="/after-sales-all-code.md" download="after-sales-all-code.md" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-2 shadow-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span>دانلود فایل Markdown (۲۳۱ کیلوبایت)</span>
+      </a>
+      <a href="/after-sales-components.tar.gz" download="after-sales-components.tar.gz" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span>دانلود آرشیو .tar.gz</span>
+      </a>
+      <a href="/after-sales-portal.html" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-2">
+        <span>اجرای پورتال وب</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Layout Container -->
+  <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+    <!-- Sidebar: Files List -->
+    <aside class="w-full md:w-80 bg-slate-800/60 border-l border-slate-700/60 p-4 overflow-y-auto flex-shrink-0">
+      <div class="text-xs font-bold text-slate-400 mb-3 px-2">فهرست کامپوننت‌های ماژول:</div>
+      <div class="space-y-1.5" id="files-list">
+        <!-- Rendered by JS -->
+      </div>
+    </aside>
+
+    <!-- Main Content: Code Viewer -->
+    <main class="flex-1 p-6 overflow-y-auto flex flex-col">
+      <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 mb-4 flex items-center justify-between">
+        <div>
+          <span class="text-xs text-blue-400 font-mono" id="current-file-path">src/components/aftersales/...</span>
+          <h2 class="text-lg font-bold text-white mt-0.5" id="current-file-title">عنوان فایل</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="copyCurrentCode()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-1.5 transition-all">
+            <span id="copy-icon">📋</span> <span id="copy-text">کپی کد</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="relative flex-1">
+        <pre><code class="language-tsx" id="code-content">// در حال بارگذاری فایل...</code></pre>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const filesMeta = [
+      { id: 0, path: "src/components/aftersales/DeploymentReportView.tsx", title: "گزارش و صورتجلسه اتمام نصب (DeploymentReport)", lines: 613 },
+      { id: 1, path: "src/components/aftersales/DeploymentRequestView.tsx", title: "ثبت درخواست نوبت استقرار (DeploymentRequest)", lines: 309 },
+      { id: 2, path: "src/components/aftersales/MaintenanceReportView.tsx", title: "گزارش سرویس پیشگیرانه دوره‌ای (MaintenanceReport)", lines: 606 },
+      { id: 3, path: "src/components/aftersales/MaintenanceRequestView.tsx", title: "ثبت درخواست سرویس دوره‌ای (MaintenanceRequest)", lines: 350 },
+      { id: 4, path: "src/components/aftersales/RepairReportView.tsx", title: "گزارش اقدام تعمیرات و تعویض قطعه (RepairReport)", lines: 658 },
+      { id: 5, path: "src/components/aftersales/RepairRequestView.tsx", title: "ثبت تیکت خرابی و توقف خط (RepairRequest)", lines: 352 },
+      { id: 6, path: "src/components/aftersales/ToolboxDefinitionView.tsx", title: "تعریف انبارک و جعبه ابزار (ToolboxDefinition)", lines: 287 },
+      { id: 7, path: "src/components/deployment/DeploymentManagementView.tsx", title: "تعریف استانداردهای استقرار (DeploymentManagement)", lines: 522 },
+      { id: 8, path: "src/components/maintenance/MaintenanceManagementView.tsx", title: "تعریف فرآیندهای PM (MaintenanceManagement)", lines: 522 },
+      { id: 9, path: "src/components/failure/FailureManagementView.tsx", title: "تعریف درخت عیوب و کدهای خطا (FailureManagement)", lines: 494 }
+    ];
+
+    let allDocsContent = "";
+    let parsedFiles = [];
+    let currentIndex = 0;
+
+    async function init() {
+      renderSidebar();
+      try {
+        const res = await fetch('/after-sales-all-code.md');
+        allDocsContent = await res.text();
+        
+        // Parse sections
+        const parts = allDocsContent.split('## 📁 فایل: `');
+        // skip intro
+        for (let i = 1; i < parts.length; i++) {
+          const part = parts[i];
+          const pathEnd = part.indexOf('`');
+          const filePath = part.substring(0, pathEnd);
+          const codeStart = part.indexOf('```tsx\n') + 7;
+          const codeEnd = part.lastIndexOf('\n```');
+          const code = part.substring(codeStart, codeEnd);
+          parsedFiles.push({ path: filePath, code: code });
+        }
+        
+        selectFile(0);
+      } catch (err) {
+        document.getElementById('code-content').innerText = "خطا در بارگذاری محتوا: " + err.message;
+      }
+    }
+
+    function renderSidebar() {
+      const container = document.getElementById('files-list');
+      container.innerHTML = '';
+      filesMeta.forEach((f, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `w-full text-right p-3 rounded-xl transition-all cursor-pointer flex flex-col gap-1 border ${
+          idx === currentIndex 
+            ? 'bg-blue-600/20 border-blue-500/50 text-white' 
+            : 'bg-slate-800/40 border-slate-700/40 text-slate-300 hover:bg-slate-700/50'
+        }`;
+        btn.onclick = () => selectFile(idx);
+        btn.id = `sidebar-btn-${idx}`;
+        btn.innerHTML = `
+          <div class="text-xs font-bold leading-snug">${f.title}</div>
+          <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono mt-1">
+            <span>${f.path.split('/').pop()}</span>
+            <span class="bg-slate-900/60 px-1.5 py-0.5 rounded text-blue-400 font-bold">${f.lines} خط</span>
+          </div>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    function selectFile(idx) {
+      currentIndex = idx;
+      // update sidebar active
+      filesMeta.forEach((_, i) => {
+        const b = document.getElementById(`sidebar-btn-${i}`);
+        if (b) {
+          if (i === idx) {
+            b.className = 'w-full text-right p-3 rounded-xl transition-all cursor-pointer flex flex-col gap-1 border bg-blue-600/20 border-blue-500/50 text-white';
+          } else {
+            b.className = 'w-full text-right p-3 rounded-xl transition-all cursor-pointer flex flex-col gap-1 border bg-slate-800/40 border-slate-700/40 text-slate-300 hover:bg-slate-700/50';
+          }
+        }
+      });
+
+      const meta = filesMeta[idx];
+      document.getElementById('current-file-path').innerText = meta.path;
+      document.getElementById('current-file-title').innerText = `${meta.title} (${meta.lines} خط کد)`;
+
+      const fileData = parsedFiles[idx];
+      const codeElem = document.getElementById('code-content');
+      if (fileData) {
+        codeElem.textContent = fileData.code;
+        Prism.highlightElement(codeElem);
+      } else {
+        codeElem.textContent = "// در حال بارگذاری فایل...";
+      }
+    }
+
+    function copyCurrentCode() {
+      const fileData = parsedFiles[currentIndex];
+      if (fileData) {
+        navigator.clipboard.writeText(fileData.code).then(() => {
+          document.getElementById('copy-text').innerText = 'کپی شد!';
+          document.getElementById('copy-icon').innerText = '✓';
+          setTimeout(() => {
+            document.getElementById('copy-text').innerText = 'کپی کد';
+            document.getElementById('copy-icon').innerText = '📋';
+          }, 2000);
+        });
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

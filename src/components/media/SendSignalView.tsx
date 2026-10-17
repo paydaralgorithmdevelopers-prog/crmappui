@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Send, Calendar, Clock, Activity, Target, Save, FileText, CheckCircle, Hash } from 'lucide-react';
+import { Send, Calendar, Clock, Activity, Target, Save, FileText, CheckCircle, Hash, History as HistoryIcon } from 'lucide-react';
 import { initialPredefinedMedia } from '../../data/mediaData';
 
 interface SendSignalViewProps {
@@ -376,6 +376,65 @@ export const SendSignalView: React.FC<SendSignalViewProps> = ({ onBack }) => {
             </button>
           </div>
         </form>
+
+        {/* History of Recorded Records Section */}
+        <div className="border-t border-slate-200 mt-2">
+          <div className="px-4 py-3 bg-slate-50/50 border-b border-slate-200 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <HistoryIcon className="w-4 h-4 text-slate-500" />
+              <h2 className="font-bold text-xs text-slate-700">فهرست سوابق ثبت شده (بر اساس تاریخ)</h2>
+            </div>
+            <span className="text-[10px] text-slate-400 font-medium">نمایش ۱۰ مورد اخیر</span>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full text-right text-[11px]">
+              <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
+                <tr>
+                  <th className="px-4 py-2 font-bold">شناسه ارسال</th>
+                  <th className="px-4 py-2 font-bold">تاریخ و زمان</th>
+                  <th className="px-4 py-2 font-bold">مخاطبان</th>
+                  <th className="px-4 py-2 font-bold">رسانه و سیگنال</th>
+                  <th className="px-4 py-2 font-bold">وضعیت</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {[
+                  { id: 'SND-8821', date: '۱۴۰۵/۱۱/۲۰', time: '۰۹:۳۰', audience: 'پتروشیمی زاگرس + ۱ گروه', media: 'لینکدین', signal: 'تعامل', status: 'ارسال شده' },
+                  { id: 'SND-8819', date: '۱۴۰۵/۱۱/۱۹', time: '۱۱:۱۵', audience: 'فولاد مبارکه', media: 'پیامک', signal: 'دلیوری', status: 'در صف ارسال' },
+                  { id: 'SND-8815', date: '۱۴۰۵/۱۱/۱۸', time: '۱۶:۴۵', audience: 'توزیع برق تهران', media: 'وب‌سایت', signal: 'بازدید', status: 'ارسال شده' },
+                ].map((row, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-4 py-2.5 font-mono text-slate-600">{row.id}</td>
+                    <td className="px-4 py-2.5">
+                      <div className="flex flex-col">
+                        <span className="text-slate-800">{row.date}</span>
+                        <span className="text-slate-400 text-[10px]">{row.time}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-2.5 font-bold text-slate-700">{row.audience}</td>
+                    <td className="px-4 py-2.5">
+                       <div className="flex flex-col">
+                        <span className="text-blue-600 font-medium">{row.media}</span>
+                        <span className="text-[10px] text-slate-400">{row.signal}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-2.5">
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                        row.status === 'ارسال شده' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'
+                      }`}>
+                        {row.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {MOCK_CAMPAIGNS.length === 0 && (
+            <div className="py-8 text-center text-slate-400 italic">سابقه‌ای برای ارسال‌های این سیگنال یافت نشد.</div>
+          )}
+        </div>
       </div>
     </div>
   );

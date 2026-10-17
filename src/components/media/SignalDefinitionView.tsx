@@ -9,48 +9,24 @@ interface DefinedSignalEntity {
   mediaId: string;
   signalType: string;
   title: string;
+  expertResponsible: string;
   fields: MediaSignalField[];
 }
 
 interface SignalDefinitionViewProps {
+  mediaList: MediaChannel[];
   onBackToCustomerGroups: () => void;
 }
 
-export const SignalDefinitionView: React.FC<SignalDefinitionViewProps> = ({ onBackToCustomerGroups }) => {
+export const SignalDefinitionView: React.FC<SignalDefinitionViewProps> = ({ mediaList, onBackToCustomerGroups }) => {
   const [definedSignals, setDefinedSignals] = useState<DefinedSignalEntity[]>([
     {
       id: 'SIG-1001',
-      mediaId: 'MED-LNK-01',
-      signalType: 'sig-1',
+      mediaId: mediaList[0]?.id || '',
+      signalType: mediaList[0]?.signals[0]?.id || '',
       title: 'نرخ تعامل لینکدین',
-      fields: [
-        {
-          id: 'f1',
-          code: 'MET-01',
-          name: 'تعداد لایک',
-          unit: 'عدد',
-          targetType: 'min',
-          targetValue: 100,
-          kpiValue: 0,
-          metricType: 'metric',
-          period: 'monthly',
-          weight: 50,
-          isActive: true,
-        },
-        {
-          id: 'f2',
-          code: 'RAT-01',
-          name: 'نرخ تبدیل لایک به کامنت',
-          unit: 'درصد (%)',
-          targetType: 'min',
-          targetValue: 10,
-          kpiValue: 0,
-          metricType: 'rate',
-          period: 'monthly',
-          weight: 50,
-          isActive: true,
-        }
-      ]
+      expertResponsible: 'مهندس احمدی',
+      fields: mediaList[0]?.signals || []
     }
   ]);
 
@@ -61,6 +37,7 @@ export const SignalDefinitionView: React.FC<SignalDefinitionViewProps> = ({ onBa
   const [selectedMediaId, setSelectedMediaId] = useState<string>(currentSignal.mediaId);
   const [signalType, setSignalType] = useState<string>(currentSignal.signalType);
   const [signalTitle, setSignalTitle] = useState<string>(currentSignal.title);
+  const [expertResponsible, setExpertResponsible] = useState<string>(currentSignal.expertResponsible || 'نامشخص');
   const [fields, setFields] = useState<MediaSignalField[]>(currentSignal.fields);
 
   useEffect(() => {
@@ -69,61 +46,31 @@ export const SignalDefinitionView: React.FC<SignalDefinitionViewProps> = ({ onBa
       setSelectedMediaId(currentSignal.mediaId);
       setSignalType(currentSignal.signalType);
       setSignalTitle(currentSignal.title);
+      setExpertResponsible(currentSignal.expertResponsible || 'نامشخص');
       setFields(currentSignal.fields);
     }
   }, [currentSignal]);
 
-  const selectedMedia = initialPredefinedMedia.find(m => m.id === selectedMediaId) || initialPredefinedMedia[0];
+  const selectedMedia = mediaList.find(m => m.id === selectedMediaId) || mediaList[0];
 
   const handleMediaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const mId = e.target.value;
     setSelectedMediaId(mId);
-    const media = initialPredefinedMedia.find(m => m.id === mId);
+    const media = mediaList.find(m => m.id === mId);
     if (media && media.signals.length > 0) {
       setSignalType(media.signals[0].id);
-      generateAutomaticFields(media.signals[0].id, media.signals[0].name);
+      setFields(media.signals);
     }
   };
 
   const handleSignalTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const sId = e.target.value;
     setSignalType(sId);
-    const sig = selectedMedia.signals.find(s => s.id === sId);
-    if (sig) {
-      generateAutomaticFields(sId, sig.name);
-    }
+    // In a real app, we would load the specific fields for this signal type
   };
 
   const generateAutomaticFields = (sigId: string, sigName: string) => {
-    // Generate some mock fields automatically when signal type changes
-    setFields([
-      {
-        id: `f-${Date.now()}-1`,
-        code: `MET-${Math.floor(100 + Math.random() * 900)}`,
-        name: `مقدار مطلق ${sigName}`,
-        unit: 'عدد',
-        targetType: 'min',
-        targetValue: 0,
-        kpiValue: 0,
-        metricType: 'metric',
-        period: 'monthly',
-        weight: 50,
-        isActive: true,
-      },
-      {
-        id: `f-${Date.now()}-2`,
-        code: `RAT-${Math.floor(100 + Math.random() * 900)}`,
-        name: `نرخ رشد ${sigName}`,
-        unit: 'درصد (%)',
-        targetType: 'min',
-        targetValue: 0,
-        kpiValue: 0,
-        metricType: 'rate',
-        period: 'monthly',
-        weight: 50,
-        isActive: true,
-      }
-    ]);
+    // This is now redundant as we load fields from selectedMedia
   };
 
   const handleSaveSignal = (e: React.FormEvent) => {
@@ -133,6 +80,7 @@ export const SignalDefinitionView: React.FC<SignalDefinitionViewProps> = ({ onBa
       mediaId: selectedMediaId,
       signalType,
       title: signalTitle,
+      expertResponsible,
       fields
     };
     
@@ -149,14 +97,15 @@ export const SignalDefinitionView: React.FC<SignalDefinitionViewProps> = ({ onBa
 
   const handleCreateNewSignal = () => {
     const newId = `SIG-${Math.floor(1000 + Math.random() * 9000)}`;
-    const media = initialPredefinedMedia[0];
-    const sType = media.signals[0]?.id || '';
+    const media = mediaList[0];
+    const sType = media?.signals[0]?.id || '';
     const newSignal: DefinedSignalEntity = {
       id: newId,
-      mediaId: media.id,
+      mediaId: media?.id || '',
       signalType: sType,
       title: 'سیگنال جدید',
-      fields: []
+      expertResponsible: 'نامشخص',
+      fields: media?.signals || []
     };
     setDefinedSignals(prev => [newSignal, ...prev]);
     setSelectedSignalId(newId);
@@ -328,6 +277,22 @@ export const SignalDefinitionView: React.FC<SignalDefinitionViewProps> = ({ onBa
                     {selectedMedia.signals.map(s => (
                       <option key={s.id} value={s.id}>{s.name}</option>
                     ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-slate-700 font-semibold mb-1">
+                    کارشناس مسئول ارسال سیگنال
+                  </label>
+                  <select
+                    value={expertResponsible}
+                    onChange={(e) => setExpertResponsible(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-slate-800 focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-2xs text-xs"
+                  >
+                    <option value="نامشخص">انتخاب کارشناس...</option>
+                    <option value="مهندس احمدی">مهندس احمدی</option>
+                    <option value="سارا رضایی">سارا رضایی</option>
+                    <option value="علی کریمی">علی کریمی</option>
+                    <option value="مریم سعادتی">مریم سعادتی</option>
                   </select>
                 </div>
               </div>

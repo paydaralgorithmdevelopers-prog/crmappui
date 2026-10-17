@@ -39,11 +39,64 @@ interface GeoGroup {
 
 interface Location {
   id: string;
-  code: string;
   name: string;
   type: 'continent' | 'country' | 'city';
-  parentGeoId: string | null;
+  children?: Location[];
 }
+
+const masterLocations: Location[] = [
+  {
+    id: 'cont-asia',
+    name: 'آسیا',
+    type: 'continent',
+    children: [
+      {
+        id: 'country-iran',
+        name: 'ایران',
+        type: 'country',
+        children: [
+          { id: 'city-tehran', name: 'تهران', type: 'city' },
+          { id: 'city-isfahan', name: 'اصفهان', type: 'city' },
+          { id: 'city-shiraz', name: 'شیراز', type: 'city' },
+        ]
+      },
+      {
+        id: 'country-oman',
+        name: 'عمان',
+        type: 'country',
+        children: [
+          { id: 'city-muscat', name: 'مسقط', type: 'city' },
+          { id: 'city-sohar', name: 'صحار', type: 'city' },
+        ]
+      },
+      {
+        id: 'country-iraq',
+        name: 'عراق',
+        type: 'country',
+        children: [
+          { id: 'city-baghdad', name: 'بغداد', type: 'city' },
+          { id: 'city-basra', name: 'بصره', type: 'city' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'cont-europe',
+    name: 'اروپا',
+    type: 'continent',
+    children: [
+      {
+        id: 'country-germany',
+        name: 'آلمان',
+        type: 'country',
+        children: [
+          { id: 'city-berlin', name: 'برلین', type: 'city' },
+          { id: 'city-hamburg', name: 'هامبورگ', type: 'city' },
+        ]
+      }
+    ]
+  }
+];
 
 const initialGeoGroups: GeoGroup[] = [
   {
@@ -57,7 +110,7 @@ const initialGeoGroups: GeoGroup[] = [
     manager: 'مهندس رضایی',
     share: 40,
     multiplier: 1.5,
-    assignedLocationIds: ['loc-1', 'loc-2'],
+    assignedLocationIds: ['country-oman', 'city-sohar'],
   },
   {
     id: 'geo-1-1',
@@ -70,16 +123,8 @@ const initialGeoGroups: GeoGroup[] = [
     manager: 'علیرضا رفیعی',
     share: 15,
     multiplier: 1.8,
-    assignedLocationIds: ['loc-1'],
+    assignedLocationIds: ['city-sohar'],
   }
-];
-
-const masterLocations: Location[] = [
-  { id: 'loc-1', code: 'OMN', name: 'عمان', type: 'country', parentGeoId: null },
-  { id: 'loc-2', code: 'UAE', name: 'امارات متحده عربی', type: 'country', parentGeoId: null },
-  { id: 'loc-3', code: 'IRQ', name: 'عراق', type: 'country', parentGeoId: null },
-  { id: 'loc-4', code: 'QAT', name: 'قطر', type: 'country', parentGeoId: null },
-  { id: 'loc-5', code: 'KWT', name: 'کویت', type: 'country', parentGeoId: null },
 ];
 
 export const GeographicGroupsTargetView: React.FC<{ onBack: () => void }> = ({ onBack }) => {
@@ -92,11 +137,8 @@ export const GeographicGroupsTargetView: React.FC<{ onBack: () => void }> = ({ o
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({
     'geo-1': true,
   });
-
-  // Local state for inline edits in the bottom table
-  const [locationSettings, setLocationSettings] = useState<Record<string, { share: number; multiplier: number }>>({
-    'loc-1': { share: 10, multiplier: 1.2 },
-    'loc-2': { share: 15, multiplier: 1.1 },
+  const [expandedLocations, setExpandedLocations] = useState<Record<string, boolean>>({
+    'cont-asia': true,
   });
 
   const currentGroup = groups.find((g) => g.id === selectedGroupId) || groups[0];
@@ -111,7 +153,19 @@ export const GeographicGroupsTargetView: React.FC<{ onBack: () => void }> = ({ o
   };
 
   const handleGroupChange = (id: string, field: keyof GeoGroup, value: any) => {
-    setGroups(prev => prev.map(g => g.id === id ? { ...g, [field]: value } : g));
+    setGroups(prev => {
+      const newGroups = prev.map(g => g.id === id ? { ...g, [field]: value } : g);
+      
+      // If we're updating share, we might want to check the sum of siblings
+      // But we allow the user to type, and just show visual feedback instead of blocking
+      return newGroups;
+    });
+  };
+
+  const getSiblingsTotalShare = (parentId: string | null) => {
+    return groups
+      .filter(g => g.parentId === parentId)
+      .reduce((sum, g) => sum + (g.share || 0), 0);
   };
 
   const handleAddSubGroup = (parentId: string | null) => {
@@ -162,39 +216,142 @@ export const GeographicGroupsTargetView: React.FC<{ onBack: () => void }> = ({ o
     }
   };
 
-  const handleToggleLocationAssignment = (locId: string) => {
+  const getAllChildIds = (location: Location): string[] => {
+    let ids = [location.id];
+    if (location.children) {
+      location.children.forEach(child => {
+        ids = [...ids, ...getAllChildIds(child)];
+      });
+    }
+    return ids;
+  };
+
+  const handleToggleLocationAssignment = (location: Location) => {
+    const idsToToggle = getAllChildIds(location);
+    const isAssigned = currentGroup.assignedLocationIds.includes(location.id);
+
     setGroups(prev => prev.map(g => {
       if (g.id === selectedGroupId) {
-        const isAssigned = g.assignedLocationIds.includes(locId);
-        const newAssigned = isAssigned 
-          ? g.assignedLocationIds.filter(id => id !== locId)
-          : [...g.assignedLocationIds, locId];
+        let newAssigned;
+        if (isAssigned) {
+          // Unassign all children as well
+          newAssigned = g.assignedLocationIds.filter(id => !idsToToggle.includes(id));
+        } else {
+          // Assign all children as well
+          const currentSet = new Set(g.assignedLocationIds);
+          idsToToggle.forEach(id => currentSet.add(id));
+          newAssigned = Array.from(currentSet);
+        }
         return { ...g, assignedLocationIds: newAssigned };
       }
       return g;
     }));
   };
 
-  const handleLocationSettingChange = (locId: string, field: 'share' | 'multiplier', value: number) => {
-    setLocationSettings(prev => ({
-      ...prev,
-      [locId]: {
-        ...(prev[locId] || { share: 0, multiplier: 1 }),
-        [field]: value
-      }
-    }));
-  };
+  const filteredMasterLocations = useMemo(() => {
+    if (!searchQuery) return masterLocations;
 
-  const filteredLocations = useMemo(() => {
-    return masterLocations.filter(l => 
-      l.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      l.code.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filterNodes = (nodes: Location[]): Location[] => {
+      return nodes.reduce((acc: Location[], node) => {
+        const matchesSearch = node.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const filteredChildren = node.children ? filterNodes(node.children) : [];
+        
+        if (matchesSearch || filteredChildren.length > 0) {
+          acc.push({
+            ...node,
+            children: filteredChildren.length > 0 ? filteredChildren : node.children
+          });
+        }
+        return acc;
+      }, []);
+    };
+
+    return filterNodes(masterLocations);
   }, [searchQuery]);
+
+  // Auto-expand nodes when searching
+  React.useEffect(() => {
+    if (searchQuery) {
+      const expandMatchedNodes = (nodes: Location[]) => {
+        nodes.forEach(node => {
+          if (node.children && node.children.some(child => 
+            child.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            (child.children && child.children.length > 0)
+          )) {
+            setExpandedLocations(prev => ({ ...prev, [node.id]: true }));
+            expandMatchedNodes(node.children || []);
+          }
+        });
+      };
+      expandMatchedNodes(filteredMasterLocations);
+    }
+  }, [searchQuery, filteredMasterLocations]);
+
+  const toggleExpandLocation = (id: string) => {
+    setExpandedLocations(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
   const toggleExpand = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setExpandedNodes(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const renderLocationNode = (location: Location, depth = 0) => {
+    const isAssigned = currentGroup.assignedLocationIds.includes(location.id);
+    const hasChildren = location.children && location.children.length > 0;
+    const isExpanded = expandedLocations[location.id];
+
+    return (
+      <div key={location.id} className="select-none">
+        <div 
+          className={`flex items-center gap-2 py-1.5 px-3 rounded-lg transition-colors cursor-pointer ${isAssigned ? 'bg-rose-50/50' : 'hover:bg-slate-50'}`}
+          style={{ paddingRight: `${depth * 24 + 12}px` }}
+          onClick={() => handleToggleLocationAssignment(location)}
+        >
+          <div className="flex items-center gap-2 flex-1">
+            {hasChildren ? (
+              <button 
+                onClick={(e) => { e.stopPropagation(); toggleExpandLocation(location.id); }}
+                className="p-1 text-slate-400 hover:text-slate-600 transition-transform duration-200"
+                style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
+              >
+                <ChevronDown className="w-3.5 h-3.5" />
+              </button>
+            ) : (
+              <div className="w-5.5" />
+            )}
+            
+            <input 
+              type="checkbox" 
+              checked={isAssigned}
+              onChange={() => handleToggleLocationAssignment(location)}
+              className="w-4 h-4 rounded border-slate-300 text-rose-600 focus:ring-rose-500 cursor-pointer shadow-2xs"
+              onClick={(e) => e.stopPropagation()}
+            />
+            
+            <span className={`text-[11px] ${isAssigned ? 'font-bold text-rose-700' : 'text-slate-700'}`}>
+              {location.name}
+            </span>
+
+            <span className="text-[9px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded uppercase font-mono">
+              {location.type === 'continent' ? 'continent' : location.type === 'country' ? 'country' : 'city'}
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            {isAssigned && (
+              <span className="bg-rose-600 w-1.5 h-1.5 rounded-full shadow-xs animate-pulse" />
+            )}
+          </div>
+        </div>
+
+        {hasChildren && isExpanded && (
+          <div className="border-r border-slate-100 mr-4">
+            {location.children?.map(child => renderLocationNode(child, depth + 1))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   const renderGroupNode = (group: GeoGroup, depth = 0) => {
@@ -243,6 +400,45 @@ export const GeographicGroupsTargetView: React.FC<{ onBack: () => void }> = ({ o
                   onClick={(e) => e.stopPropagation()}
                   onChange={(e) => handleGroupChange(group.id, 'manager', e.target.value)}
                   className="bg-transparent border-none focus:ring-0 p-0 text-slate-600 w-20 text-center"
+                />
+              </div>
+            </div>
+
+            <div className="hidden lg:flex items-center gap-3 ml-4 relative group/share">
+              <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded border transition-all ${
+                getSiblingsTotalShare(group.parentId) > 100 
+                  ? 'bg-rose-50 border-rose-300 ring-2 ring-rose-100' 
+                  : 'bg-slate-100/50 border-slate-200'
+              }`}>
+                <span className="text-[10px] text-slate-500">سهم از تارگت:</span>
+                <input 
+                  type="number"
+                  value={group.share}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={(e) => handleGroupChange(group.id, 'share', Number(e.target.value))}
+                  className={`bg-transparent border-none focus:ring-0 p-0 w-8 text-center text-[11px] font-bold ${
+                    getSiblingsTotalShare(group.parentId) > 100 ? 'text-rose-600' : 'text-rose-700'
+                  }`}
+                />
+                <span className="text-[10px] text-slate-400">%</span>
+                
+                {getSiblingsTotalShare(group.parentId) > 100 && (
+                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-rose-600 text-white text-[9px] px-2 py-1 rounded shadow-lg z-50 whitespace-nowrap flex items-center gap-1">
+                    <HelpCircle className="w-3 h-3" />
+                    <span>مجموع: {getSiblingsTotalShare(group.parentId)}% (بیش از ۱۰۰٪)</span>
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-rose-600"></div>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-1.5 bg-slate-100/50 px-2 py-0.5 rounded border border-slate-200">
+                <span className="text-[10px] text-slate-500">ضریب پورسانت:</span>
+                <input 
+                  type="number"
+                  step="0.1"
+                  value={group.multiplier}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={(e) => handleGroupChange(group.id, 'multiplier', Number(e.target.value))}
+                  className="bg-transparent border-none focus:ring-0 p-0 text-indigo-700 w-10 text-center text-[11px] font-bold"
                 />
               </div>
             </div>
@@ -312,7 +508,7 @@ export const GeographicGroupsTargetView: React.FC<{ onBack: () => void }> = ({ o
       </div>
 
       <div className="grid grid-cols-1 gap-3.5 items-start">
-        <div className="bg-white rounded-xl border border-slate-200 shadow-xs h-[320px] flex flex-col overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-xs h-[400px] flex flex-col overflow-hidden">
           <div className="px-4 py-2 bg-slate-50/90 border-b border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <GitBranch className="w-4 h-4 text-rose-600" />
@@ -390,7 +586,7 @@ export const GeographicGroupsTargetView: React.FC<{ onBack: () => void }> = ({ o
               <div className="relative flex-1 max-w-xs">
                 <input 
                   type="text" 
-                  placeholder="جستجو در مناطق..." 
+                  placeholder="جستجو در قاره‌ها، کشورها و شهرها..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-white border border-slate-200 rounded-lg pr-8 pl-3 py-1.5 text-[11px] outline-hidden focus:border-rose-500 shadow-2xs"
@@ -398,46 +594,29 @@ export const GeographicGroupsTargetView: React.FC<{ onBack: () => void }> = ({ o
                 <Search className="w-3 h-3 text-slate-400 absolute right-2.5 top-2.5" />
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-slate-400 italic">انتساب مناطق در این جدول آنی انجام می‌شود</span>
-                <button className="text-[10px] bg-white text-slate-700 border border-slate-200 px-3 py-1.5 rounded-lg font-bold">انتخاب گروهی</button>
+                <span className="text-[10px] text-slate-400 italic">با انتخاب والد، تمامی زیرمجموعه‌ها نیز انتخاب می‌شوند</span>
+                <button 
+                  onClick={() => {
+                    setGroups(prev => prev.map(g => g.id === selectedGroupId ? { ...g, assignedLocationIds: [] } : g));
+                  }}
+                  className="text-[10px] bg-white text-rose-700 border border-rose-200 px-3 py-1.5 rounded-lg font-bold hover:bg-rose-50 transition-colors"
+                >
+                  حذف تمامی انتخاب‌ها
+                </button>
               </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-right text-xs border-collapse">
-                <thead>
-                  <tr className="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
-                    <th className="py-2.5 px-4 w-12 text-center">ردیف</th>
-                    <th className="py-2.5 px-4 w-10 text-center">انتساب</th>
-                    <th className="py-2.5 px-4">کد ایزو</th>
-                    <th className="py-2.5 px-4">نام کشور / منطقه</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filteredLocations.map((loc, idx) => {
-                    const isAssigned = currentGroup.assignedLocationIds.includes(loc.id);
-                    
-                    return (
-                      <tr 
-                        key={loc.id} 
-                        className={`hover:bg-slate-50 transition-colors ${isAssigned ? 'bg-rose-50/20' : 'opacity-80'}`}
-                      >
-                        <td className="py-2.5 px-4 text-center text-slate-400 font-mono text-[10px]">{(idx + 1).toLocaleString('fa-IR')}</td>
-                        <td className="py-2.5 px-4 text-center">
-                          <input 
-                            type="checkbox" 
-                            checked={isAssigned} 
-                            onChange={() => handleToggleLocationAssignment(loc.id)}
-                            className="w-4 h-4 rounded border-slate-300 text-rose-600 focus:ring-rose-500 cursor-pointer shadow-2xs" 
-                          />
-                        </td>
-                        <td className="py-2.5 px-4"><span className="font-mono text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-100">{loc.code}</span></td>
-                        <td className="py-2.5 px-4 font-bold text-slate-800">{loc.name}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+            <div className="p-4 max-h-[500px] overflow-y-auto">
+              <div className="space-y-1">
+                {filteredMasterLocations.length > 0 ? (
+                  filteredMasterLocations.map(continent => renderLocationNode(continent))
+                ) : (
+                  <div className="py-10 text-center text-slate-400">
+                    <Search className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                    <p className="text-[11px]">موردی برای جستجوی شما یافت نشد.</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         ) : (

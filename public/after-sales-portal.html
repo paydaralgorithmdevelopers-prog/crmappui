@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سامانه جامع خدمات پس از فروش و پشتیبانی فنی</title>
+  <!-- Vazirmatn Font CDN -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================================================
+       CSS STYLES - سامانه خدمات پس از فروش
+       ========================================================================== */
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      --warning: #f59e0b;
+      --warning-light: #fffbeb;
+      --purple: #8b5cf6;
+      --purple-light: #f5f3ff;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+      --radius: 14px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #f8fafc;
+      color: var(--slate-800);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* Container */
+    .container {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* Top App Header */
+    .app-header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--slate-200);
+      padding: 16px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: 0 1px 3px 0 rgba(0,0,0,0.03);
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      color: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+    }
+
+    .brand-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--slate-900);
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--slate-600);
+    }
+
+    /* KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .kpi-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .kpi-val {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--slate-900);
+    }
+
+    .kpi-lbl {
+      font-size: 12px;
+      color: var(--slate-600);
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      background: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: 14px;
+      padding: 6px;
+      gap: 6px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 16px;
+      border: none;
+      background: transparent;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--slate-600);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      background: var(--slate-100);
+      color: var(--slate-800);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+    }
+
+    /* Tab Content Panes */
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards & Panels */
+    .card {
+      background: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--slate-200);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--slate-900);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      outline: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .btn-outline {
+      background: white;
+      border-color: var(--slate-300);
+      color: var(--slate-700);
+    }
+    .btn-outline:hover {
+      background: var(--slate-100);
+      border-color: var(--slate-400);
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 8px;
+    }
+
+    /* Forms & Inputs */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--slate-700);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--slate-200);
+      background: #f8fafc;
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--slate-800);
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      background: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge-primary { background: var(--primary-light); color: var(--primary); }
+    .badge-success { background: var(--success-light); color: var(--success); }
+    .badge-danger { background: var(--danger-light); color: var(--danger); }
+    .badge-warning { background: var(--warning-light); color: var(--warning); }
+    .badge-purple { background: var(--purple-light); color: var(--purple); }
+
+    .pulse {
+      animation: pulseAnim 1.8s infinite;
+    }
+
+    @keyframes pulseAnim {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.55; }
+    }
+
+    /* Tables */
+    .table-responsive {
+      overflow-x: auto;
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      background: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+      font-size: 13px;
+    }
+
+    thead th {
+      background: var(--slate-100);
+      color: var(--slate-700);
+      padding: 12px 16px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--slate-200);
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--slate-100);
+      color: var(--slate-800);
+      vertical-align: middle;
+    }
+
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Alert Banner */
+    .alert {
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      border: 1px solid transparent;
+    }
+    .alert-danger {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #991b1b;
+    }
+    .alert-info {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1e40af;
+    }
+    .alert-success {
+      background: #ecfdf5;
+      border-color: #a7f3d0;
+      color: #065f46;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      background: var(--slate-900);
+      color: white;
+      padding: 14px 22px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 999;
+    }
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal-box {
+      background: white;
+      border-radius: 18px;
+      width: 100%;
+      max-width: 650px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      animation: modalIn 0.25s ease-out;
+    }
+    @keyframes modalIn {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--slate-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-body {
+      padding: 24px;
+    }
+
+    /* Print Styles */
+    @media print {
+      body { background: white; }
+      .app-header, .nav-tabs, .btn, .no-print { display: none !important; }
+      .container { padding: 0; max-width: 100%; }
+      .card { border: none; box-shadow: none; padding: 0; }
+      .print-only { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <div class="brand-title">سیستم جامع خدمات پس از فروش و پشتیبانی فنی</div>
+        <div class="brand-sub">تابلوسازی برق و اتوماسیون صنعتی پارس • نسخه تحت وب مستقل</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button class="btn btn-outline btn-sm no-print" onclick="window.print()">🖨️ چاپ صورتجلسه</button>
+      <button class="btn btn-primary btn-sm" onclick="exportKardexCSV()">📥 خروجی داده‌ها</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <!-- Top KPI Widgets -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:#eff6ff; color:#2563eb;">🚀</div>
+        <div>
+          <div class="kpi-val" id="kpi-deploy-count">۳</div>
+          <div class="kpi-lbl">درخواست‌های فعال نصب و استقرار</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:#fef2f2; color:#ef4444;">🚨</div>
+        <div>
+          <div class="kpi-val" id="kpi-emergency-count">۱</div>
+          <div class="kpi-lbl">تیکت توقف خط اضطراری</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:#fffbeb; color:#f59e0b;">🔧</div>
+        <div>
+          <div class="kpi-val" id="kpi-pm-count">۵</div>
+          <div class="kpi-lbl">برنامه سرویس دوره‌ای (PM)</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:#f5f3ff; color:#8b5cf6;">📦</div>
+        <div>
+          <div class="kpi-val" id="kpi-toolbox-count">۱۲</div>
+          <div class="kpi-lbl">موجودی قطعات یدکی انبارک‌ها</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs no-print">
+      <button class="tab-btn active" onclick="switchTab('tab-operations')">📋 عملیات اجرایی و درخواست‌ها</button>
+      <button class="tab-btn" onclick="switchTab('tab-reports')">📝 صورتجلسات و گزارشات اتمام</button>
+      <button class="tab-btn" onclick="switchTab('tab-definitions')">⚙️ تعاریف پایه و فرآیندها</button>
+      <button class="tab-btn" onclick="switchTab('tab-kardex')">📊 کاردکس ابزار و قطعات یدکی</button>
+    </nav>
+
+    <!-- ==========================================
+         TAB 1: عملیات اجرایی و تیکت‌ها
+         ========================================== -->
+    <div id="tab-operations" class="tab-pane active">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        
+        <!-- Form: ثبت درخواست استقرار -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🚀 ثبت نوبت نصب و راه‌اندازی (استقرار)</div>
+            <span class="badge badge-primary">اتصال به فاکتور رسمی</span>
+          </div>
+
+          <form id="form-deployment" onsubmit="handleDeploymentSubmit(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>شماره فاکتور فروش *</label>
+                <input type="text" id="dep-invoice" value="INV-1405-882" required>
+              </div>
+              <div class="form-group">
+                <label>شماره سریال یونیک تابلو *</label>
+                <input type="text" id="dep-serial" value="SN-PARS-99201" required>
+              </div>
+              <div class="form-group">
+                <label>نام کارفرما / کارخانه *</label>
+                <input type="text" id="dep-customer" value="مجتمع فولاد خوزستان" required>
+              </div>
+              <div class="form-group">
+                <label>تاریخ اعزام پیشنهادی *</label>
+                <input type="text" id="dep-date" value="۱۴۰۵/۰۲/۲۰" required>
+              </div>
+              <div class="form-group">
+                <label>تکنسین / کارشناس اعزامی *</label>
+                <select id="dep-tech">
+                  <option>مهندس رضایی (تیم برق قدرت)</option>
+                  <option>مهندس محمدی (تیم اتوماسیون)</option>
+                  <option>مهندس سعیدی (تکنسین ارشد نصب)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>اولویت سرویس</label>
+                <select id="dep-priority">
+                  <option value="normal">عادی (طبق نوبت)</option>
+                  <option value="urgent">فوری (خط در انتظار راه‌اندازی)</option>
+                </select>
+              </div>
+              <div class="form-group full-width">
+                <label>آدرس سایت و محل استقرار تابلو *</label>
+                <input type="text" id="dep-address" value="اهواز، شهرک صنعتی شماره ۲، فاز ۳ توسعه نیروگاهی" required>
+              </div>
+              <div class="form-group full-width">
+                <label>توضیحات و ابزارهای خاص مورد نیاز</label>
+                <textarea rows="2" id="dep-notes">نیاز به هماهنگی با حراست سایت جهت ورود ترکمتر و دستگاه میگر تست ۵ کیلوولت.</textarea>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">ثبت درخواست و صدور حواله اعزام</button>
+          </form>
+        </div>
+
+        <!-- Form: اعلام خرابی و تیکت اضطراری -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🚨 تیکت اعلام خرابی و تعمیر اضطراری</div>
+            <span class="badge badge-danger pulse">اولویت ویژه</span>
+          </div>
+
+          <!-- Alert for Line Stoppage -->
+          <div class="alert alert-danger">
+            <span>⚠️</span>
+            <div><strong>هشدار خط متوقف:</strong> در صورت انتخاب توقف خط تولید، آلارم قرمز در کارتابل سرپرست پشتیبانی صادر می‌شود.</div>
+          </div>
+
+          <form id="form-repair" onsubmit="handleRepairSubmit(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>نام کارفرما / سایت *</label>
+                <input type="text" id="rep-customer" value="پتروشیمی زاگرس" required>
+              </div>
+              <div class="form-group">
+                <label>شماره سریال تجهیز *</label>
+                <input type="text" id="rep-serial" value="SN-88201-ZR" required>
+              </div>
+              <div class="form-group">
+                <label>کد خطای استاندارد (Fault Code)</label>
+                <select id="rep-code">
+                  <option value="ERR-401">ERR-401: قطع کلید اصلی / Overload Trip</option>
+                  <option value="ERR-202">ERR-202: عدم تقارن فاز / Phase Loss</option>
+                  <option value="ERR-105">ERR-105: حرارت غیرمجاز شینه‌ها / Thermal Alert</option>
+                  <option value="ERR-999">سایر عیوب مکانیکی یا اتصالات</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>وضعیت خط تولید *</label>
+                <select id="rep-halted" onchange="toggleHaltStyle(this.value)">
+                  <option value="yes" selected>بله - خط تولید کاملاً متوقف شده است</option>
+                  <option value="no">خیر - کارکرد با ظرفیت محدود دارد</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>تاریخ و ساعت رخداد</label>
+                <input type="text" id="rep-time" value="۱۴۰۵/۰۲/۱۵ ساعت ۱۴:۳۰">
+              </div>
+              <div class="form-group">
+                <label>ارجاع به تکنسین کشیک</label>
+                <select id="rep-tech">
+                  <option>مهندس رضایی (کشیک اورژانس)</option>
+                  <option>مهندس محمدی (متخصص درایو و PLC)</option>
+                </select>
+              </div>
+              <div class="form-group full-width">
+                <label>شرح مشاهده عیب از زبان اپراتور سایت *</label>
+                <textarea rows="2" id="rep-desc" required>تریپ خوردن کلید اتوماتیک کامپکت ۱۶۰۰ آمپر در زیر بار کامل همراه با بوی داغی شدید در شینه فاز R.</textarea>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-danger" style="width: 100%;">ثبت تیکت اورژانس و اعزام فوری</button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Live Service Queue Table -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📌 صف درخواست‌های در جریان خدمات پس از فروش</div>
+          <span class="badge badge-purple" id="active-tasks-count">۳ مورد فعال</span>
+        </div>
+        <div class="table-responsive">
+          <table id="tasks-table">
+            <thead>
+              <tr>
+                <th>کد پیگیری</th>
+                <th>نوع خدمت</th>
+                <th>مشتری / کارفرما</th>
+                <th>سریال تابلو</th>
+                <th>تکنسین مسئول</th>
+                <th>تاریخ اعزام</th>
+                <th>وضعیت</th>
+                <th>عملیات</th>
+              </tr>
+            </thead>
+            <tbody id="tasks-tbody">
+              <!-- Dynamically Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         TAB 2: صورتجلسات و گزارشات اتمام کار
+         ========================================== -->
+    <div id="tab-reports" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📝 ثبت صورتجلسه اتمام نصب و تحویل قطعی به مشتری</div>
+          <button class="btn btn-outline btn-sm" onclick="fillSampleReport()">تکمیل خودکار نمونه</button>
+        </div>
+
+        <form id="form-report" onsubmit="handleReportSubmit(event)">
+          <div class="alert alert-info">
+            این صورتجلسه مبنای رسمی شروع دوره گارانتی ۳۶ ماهه شرکت تابلوسازی برق پارس و تسویه فاکتور فروش است.
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>کد درخواست استقرار / تیکت *</label>
+              <input type="text" id="rep-req-id" value="REQ-DEP-9941" required>
+            </div>
+            <div class="form-group">
+              <label>نام نماینده کارفرما (تحویل‌گیرنده) *</label>
+              <input type="text" id="rep-signatory" value="مهندس حسینی (ناظر تاسیسات)" required>
+            </div>
+            <div class="form-group">
+              <label>مقاومت عایقی فاز به فاز (مگااهم) *</label>
+              <input type="number" id="rep-insulation" value="125" required>
+            </div>
+            <div class="form-group">
+              <label>دمای محیط پست در زمان تست (°C)</label>
+              <input type="number" id="rep-temp" value="28">
+            </div>
+            <div class="form-group">
+              <label>تست بی‌باری (No-Load Test) *</label>
+              <select id="rep-noload">
+                <option value="pass">موفقیت‌آمیز - بدون لرزش و صدا</option>
+                <option value="fail">ناموفق - نیاز به اصلاح</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>تست زیر بار نامی ۱۰۰٪ *</label>
+              <select id="rep-fullload">
+                <option value="pass">موفقیت‌آمیز - بالانس کامل فازها</option>
+                <option value="fail">ناموفق</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>میزان رضایت کارفرما از رفتار و تخصص تیم</label>
+              <select id="rep-rating">
+                <option value="5">⭐⭐⭐⭐⭐ عالی (۵ از ۵)</option>
+                <option value="4">⭐⭐⭐⭐ خوب (۴ از ۵)</option>
+                <option value="3">⭐⭐⭐ متوسط (۳ از ۵)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>وضعیت مصرف قطعات یدکی از انبارک</label>
+              <input type="text" id="rep-used-parts" value="۲ عدد کابلشوی نمره ۱۲۰، ۱ عدد اسپری تمیزکننده خشک">
+            </div>
+            <div class="form-group full-width">
+              <label>تعهدات تکمیلی و توضیحات نهایی صورتجلسه</label>
+              <textarea rows="2" id="rep-final-notes">تابلوی فشار ضعیف برق‌دار و با موفقیت تحویل گردید. دفترچه نقشه‌های وایرینگ به سرپرست پست تحویل شد.</textarea>
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <button type="submit" class="btn btn-success">ثبت نهایی و صدور گواهی تحویل</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Completed Handover Archive -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🗂️ آرشیو صورتجلسات تحویل و گارانتی‌های فعال</div>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>شماره صورتجلسه</th>
+                <th>کارفرما</th>
+                <th>سریال تجهیز</th>
+                <th>تاریخ اتمام</th>
+                <th>تست بار</th>
+                <th>رضایت</th>
+                <th>عملیات</th>
+              </tr>
+            </thead>
+            <tbody id="completed-reports-tbody">
+              <tr>
+                <td><strong>DOC-1405-01</strong></td>
+                <td>مجتمع فولاد خوزستان</td>
+                <td>SN-PARS-99201</td>
+                <td>۱۴۰۵/۰۲/۲۱</td>
+                <td><span class="badge badge-success">تایید ۱۰۰٪</span></td>
+                <td>۵ از ۵ ⭐</td>
+                <td><button class="btn btn-outline btn-sm" onclick="printHandover('DOC-1405-01')">چاپ صورتجلسه</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         TAB 3: تعاریف پایه و فرآیندها
+         ========================================== -->
+    <div id="tab-definitions" class="tab-pane">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+
+        <!-- 1. انواع استقرار و فرم‌ساز داینامیک -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📐 تعریف فرآیند استاندارد استقرار</div>
+            <button class="btn btn-primary btn-sm" onclick="openDynamicFieldModal()">+ افزودن فیلد داینامیک</button>
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label>عنوان دستورالعمل استقرار</label>
+            <input type="text" value="استقرار تابلوی توزیع فشار ضعیف (LV) مدل Pars-Max">
+          </div>
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label>دستورالعمل‌های استاندارد بازرسی</label>
+            <textarea rows="3">آچارکشی شینه‌ها با ترکمتر عایق، کنترل تطابق کلیدها با جدول بار، تست اتصال زمین شاسی تابلو کمتر از ۱ اهم.</textarea>
+          </div>
+
+          <label style="margin-bottom: 8px; display: block;">فیلدهای پویای گزارش تکنسین (Dynamic Form Fields):</label>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>عنوان فیلد</th>
+                  <th>نوع ورودی</th>
+                  <th>الزامی</th>
+                  <th>حذف</th>
+                </tr>
+              </thead>
+              <tbody id="dynamic-fields-tbody">
+                <tr>
+                  <td>مقاومت عایقی فاز به فاز (MΩ)</td>
+                  <td>عددی</td>
+                  <td><span class="badge badge-danger">بله</span></td>
+                  <td><button class="btn btn-outline btn-sm" onclick="removeDynamicField(this)">✕</button></td>
+                </tr>
+                <tr>
+                  <td>دمای بدنه در جریان نامی (°C)</td>
+                  <td>عددی</td>
+                  <td><span class="badge badge-primary">اختیاری</span></td>
+                  <td><button class="btn btn-outline btn-sm" onclick="removeDynamicField(this)">✕</button></td>
+                </tr>
+                <tr>
+                  <td>تست عملکرد رله ارت فالت</td>
+                  <td>تیک‌باکس</td>
+                  <td><span class="badge badge-danger">بله</span></td>
+                  <td><button class="btn btn-outline btn-sm" onclick="removeDynamicField(this)">✕</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 2. کدهای خطا و انبارک‌های تکنسین‌ها -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🧰 انبارک‌ها و جعبه ابزارهای فعال تکنسین‌ها</div>
+            <button class="btn btn-primary btn-sm" onclick="addToolboxPrompt()">+ انبارک جدید</button>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>شناسه</th>
+                  <th>نام جعبه ابزار</th>
+                  <th>تکنسین مسئول</th>
+                  <th>نوع ماموریت</th>
+                  <th>وضعیت</th>
+                </tr>
+              </thead>
+              <tbody id="toolboxes-tbody">
+                <tr>
+                  <td><strong>TB-101</strong></td>
+                  <td>انبارک سیار جنوب کشور</td>
+                  <td>مهندس رضایی</td>
+                  <td>نصب و تعمیرات تخصصی</td>
+                  <td><span class="badge badge-success">فعال</span></td>
+                </tr>
+                <tr>
+                  <td><strong>TB-102</strong></td>
+                  <td>انبارک سرویس دوره‌ای مرکز</td>
+                  <td>مهندس محمدی</td>
+                  <td>نگهداشت دوره‌ای (PM)</td>
+                  <td><span class="badge badge-success">فعال</span></td>
+                </tr>
+                <tr>
+                  <td><strong>TB-103</strong></td>
+                  <td>کیت اتوماسیون و ابزاردقیق</td>
+                  <td>مهندس سعیدی</td>
+                  <td>راه‌اندازی PLC و درایو</td>
+                  <td><span class="badge badge-success">فعال</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div style="margin-top: 24px;">
+            <div class="card-title" style="margin-bottom: 12px;">🚨 درخت عیوب استاندارد (Fault Tree):</div>
+            <ul style="list-style: none; font-size: 13px; display: flex; flex-direction: column; gap: 8px;">
+              <li style="padding: 10px; background: #f8fafc; border: 1px solid var(--slate-200); border-radius: 8px; display: flex; justify-content: space-between;">
+                <span><strong>ERR-401:</strong> قطع کلید قدرت (Overload / Short Circuit)</span>
+                <span class="badge badge-danger">شدت بحرانی</span>
+              </li>
+              <li style="padding: 10px; background: #f8fafc; border: 1px solid var(--slate-200); border-radius: 8px; display: flex; justify-content: space-between;">
+                <span><strong>ERR-202:</strong> افت یا عدم تقارن ولتاژ فازها (Phase Loss)</span>
+                <span class="badge badge-warning">متوسط</span>
+              </li>
+              <li style="padding: 10px; background: #f8fafc; border: 1px solid var(--slate-200); border-radius: 8px; display: flex; justify-content: space-between;">
+                <span><strong>ERR-105:</strong> آلارم سنسور دمای بانک خازنی</span>
+                <span class="badge badge-primary">نگهداشت</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==========================================
+         TAB 4: کاردکس ابزار و قطعات یدکی
+         ========================================== -->
+    <div id="tab-kardex" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">📊 کاردکس حسابداری انبارک و قطعات یدکی تکنسین‌ها</div>
+            <div style="font-size: 12px; color: var(--slate-600); margin-top: 4px;">
+              گردش وارده، صادره و موجودی لحظه‌ای قطعات یدکی و ابزار مصرف‌شده در پروژه‌ها
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-primary btn-sm" onclick="openAddKardexModal()">+ ثبت سند جدید (ورود / خروج)</button>
+          </div>
+        </div>
+
+        <!-- Filter bar -->
+        <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+          <input type="text" id="kardex-search" placeholder="جستجو در قطعه، کارفرما، تکنسین یا شماره سند..." style="flex: 1; min-width: 280px;" oninput="filterKardex()">
+          <select id="kardex-type-filter" style="width: 180px;" onchange="filterKardex()">
+            <option value="all">همه اقلام</option>
+            <option value="spare_part">قطعات یدکی مصرفی</option>
+            <option value="tool">ابزارآلات اختصاصی</option>
+          </select>
+        </div>
+
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>ردیف</th>
+                <th>تاریخ</th>
+                <th>شماره سند</th>
+                <th>شرح کالا یا قطعه یدکی</th>
+                <th>نوع قلم</th>
+                <th>وارده (+)</th>
+                <th>صادره (-)</th>
+                <th>مانده انبارک</th>
+                <th>تکنسین مسئول</th>
+                <th>پروژه / کارفرما</th>
+              </tr>
+            </thead>
+            <tbody id="kardex-tbody">
+              <!-- Dynamically Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal: ثبت سند جدید در کاردکس -->
+  <div id="kardex-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div style="font-weight: 800; font-size: 15px;">ثبت سند ورود / مصرف قطعه در کاردکس</div>
+        <button onclick="closeModal('kardex-modal')" style="background:none; border:none; font-size: 18px; cursor: pointer;">✕</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="handleNewKardexEntry(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>شماره سند / حواله</label>
+              <input type="text" id="k-voucher" value="TR-1008" required>
+            </div>
+            <div class="form-group">
+              <label>تاریخ سند</label>
+              <input type="text" id="k-date" value="۱۴۰۵/۰۲/۲۲" required>
+            </div>
+            <div class="form-group">
+              <label>شرح قطعه یا ابزار *</label>
+              <input type="text" id="k-item" placeholder="مثلاً: کلید اتوماتیک ۱۶۰ آمپر اشنایدر" required>
+            </div>
+            <div class="form-group">
+              <label>نوع قلم</label>
+              <select id="k-type">
+                <option value="spare_part">قطعه یدکی مصرفی</option>
+                <option value="tool">ابزار اختصاصی</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>نوع عملیات *</label>
+              <select id="k-action">
+                <option value="in">وارده (+) - شارژ از انبار مرکزی</option>
+                <option value="out">صادره (-) - مصرف روی پروژه مشتری</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>تعداد / مقدار *</label>
+              <input type="number" id="k-qty" min="1" value="1" required>
+            </div>
+            <div class="form-group">
+              <label>تکنسین تحویل‌گیرنده / مصرف‌کننده</label>
+              <input type="text" id="k-tech" value="مهندس رضایی" required>
+            </div>
+            <div class="form-group">
+              <label>مشتری یا سریال مصرف‌شده</label>
+              <input type="text" id="k-target" value="پتروشیمی زاگرس (SN-88201)">
+            </div>
+          </div>
+          <div style="display:flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
+            <button type="button" class="btn btn-outline" onclick="closeModal('kardex-modal')">انصراف</button>
+            <button type="submit" class="btn btn-primary">ثبت قطعی در کاردکس</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Element -->
+  <div id="toast">
+    <span id="toast-icon">✓</span>
+    <span id="toast-msg">عملیات با موفقیت انجام شد</span>
+  </div>
+
+  <!-- ==========================================================================
+       JAVASCRIPT LOGIC - سامانه خدمات پس از فروش
+       ========================================================================== -->
+  <script>
+    // State Data
+    let activeTasks = [
+      {
+        id: 'REQ-DEP-9941',
+        type: 'استقرار و راه‌اندازی',
+        customer: 'مجتمع فولاد خوزستان',
+        serial: 'SN-PARS-99201',
+        technician: 'مهندس رضایی',
+        date: '۱۴۰۵/۰۲/۲۰',
+        status: 'in_progress',
+        statusLabel: 'اعزام شده / در حال اجرا',
+        badge: 'badge-primary'
+      },
+      {
+        id: 'TCK-ERR-401',
+        type: 'تعمیرات اضطراری',
+        customer: 'پتروشیمی زاگرس',
+        serial: 'SN-88201-ZR',
+        technician: 'مهندس رضایی',
+        date: '۱۴۰۵/۰۲/۱۵',
+        status: 'urgent',
+        statusLabel: 'خط متوقف (اورژانس)',
+        badge: 'badge-danger pulse'
+      },
+      {
+        id: 'PM-1405-33',
+        type: 'نگهداشت دوره‌ای PM',
+        customer: 'سیمان سپاهان اصفهان',
+        serial: 'SN-77211-SP',
+        technician: 'مهندس محمدی',
+        date: '۱۴۰۵/۰۲/۲۸',
+        status: 'pending',
+        statusLabel: 'برنامه‌ریزی شده',
+        badge: 'badge-warning'
+      }
+    ];
+
+    let kardexRecords = [
+      {
+        id: 1,
+        date: '۱۴۰۵/۰۲/۰۱',
+        voucher: 'TR-1001',
+        name: 'کلید حرارتی اشنایدر ۳۲ آمپر',
+        type: 'spare_part',
+        inQty: 10,
+        outQty: 0,
+        balance: 10,
+        technician: 'مهندس رضایی',
+        target: 'شارژ اولیه از انبار مرکزی'
+      },
+      {
+        id: 2,
+        date: '۱۴۰۵/۰۲/۰۸',
+        voucher: 'REP-4402',
+        name: 'کلید حرارتی اشنایدر ۳۲ آمپر',
+        type: 'spare_part',
+        inQty: 0,
+        outQty: 2,
+        balance: 8,
+        technician: 'مهندس رضایی',
+        target: 'پتروشیمی زاگرس (SN-88201)'
+      },
+      {
+        id: 3,
+        date: '۱۴۰۵/۰۲/۱۰',
+        voucher: 'TR-1005',
+        name: 'آچار ترکمتر عایق ۱۰۰۰ ولت',
+        type: 'tool',
+        inQty: 1,
+        outQty: 0,
+        balance: 1,
+        technician: 'مهندس رضایی',
+        target: 'تحویل ابزار اختصاصی کالیبره‌شده'
+      },
+      {
+        id: 4,
+        date: '۱۴۰۵/۰۲/۱۵',
+        voucher: 'REP-4410',
+        name: 'کنتاکتور کمکی Dila-XHI',
+        type: 'spare_part',
+        inQty: 0,
+        outQty: 3,
+        balance: 3,
+        technician: 'مهندس سعیدی',
+        target: 'فولاد خوزستان (پروژه توسعه)'
+      }
+    ];
+
+    // Initialize App
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTasksTable();
+      renderKardexTable(kardexRecords);
+      updateKPIs();
+    });
+
+    // Tab Switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      
+      event.currentTarget.classList.add('active');
+      const targetPane = document.getElementById(tabId);
+      if (targetPane) targetPane.classList.add('active');
+    }
+
+    // Render Tasks Table
+    function renderTasksTable() {
+      const tbody = document.getElementById('tasks-tbody');
+      tbody.innerHTML = '';
+
+      activeTasks.forEach(task => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${task.id}</strong></td>
+          <td>${task.type}</td>
+          <td>${task.customer}</td>
+          <td><code>${task.serial}</code></td>
+          <td>${task.technician}</td>
+          <td>${task.date}</td>
+          <td><span class="badge ${task.badge}">${task.statusLabel}</span></td>
+          <td>
+            <button class="btn btn-outline btn-sm" onclick="finishTask('${task.id}')">ثبت اتمام کار</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('active-tasks-count').innerText = `${activeTasks.length} مورد فعال`;
+    }
+
+    // Render Kardex Table
+    function renderKardexTable(data) {
+      const tbody = document.getElementById('kardex-tbody');
+      tbody.innerHTML = '';
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding: 24px; color: var(--slate-600);">هیچ سندی با این مشخصات یافت نشد.</td></tr>`;
+        return;
+      }
+
+      data.forEach((r, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${r.date}</td>
+          <td><strong>${r.voucher}</strong></td>
+          <td>${r.name}</td>
+          <td><span class="badge ${r.type === 'spare_part' ? 'badge-primary' : 'badge-purple'}">${r.type === 'spare_part' ? 'قطعه یدکی' : 'ابزارکار'}</span></td>
+          <td style="color: var(--success); font-weight: 800;">${r.inQty > 0 ? '+' + r.inQty : '-'}</td>
+          <td style="color: var(--danger); font-weight: 800;">${r.outQty > 0 ? '-' + r.outQty : '-'}</td>
+          <td style="font-weight: 900; background: #f8fafc;">${r.balance}</td>
+          <td>${r.technician}</td>
+          <td>${r.target}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Filter Kardex
+    function filterKardex() {
+      const query = document.getElementById('kardex-search').value.toLowerCase().trim();
+      const type = document.getElementById('kardex-type-filter').value;
+
+      const filtered = kardexRecords.filter(r => {
+        const matchesQuery = r.name.toLowerCase().includes(query) ||
+                             r.target.toLowerCase().includes(query) ||
+                             r.technician.toLowerCase().includes(query) ||
+                             r.voucher.toLowerCase().includes(query);
+        const matchesType = type === 'all' || r.type === type;
+        return matchesQuery && matchesType;
+      });
+
+      renderKardexTable(filtered);
+    }
+
+    // Submit Deployment Request
+    function handleDeploymentSubmit(e) {
+      e.preventDefault();
+      const newReq = {
+        id: `REQ-DEP-${Math.floor(1000 + Math.random() * 9000)}`,
+        type: 'استقرار و راه‌اندازی',
+        customer: document.getElementById('dep-customer').value,
+        serial: document.getElementById('dep-serial').value,
+        technician: document.getElementById('dep-tech').value,
+        date: document.getElementById('dep-date').value,
+        status: 'in_progress',
+        statusLabel: 'اعزام شده / در حال اجرا',
+        badge: 'badge-primary'
+      };
+
+      activeTasks.unshift(newReq);
+      renderTasksTable();
+      updateKPIs();
+      showToast('درخواست استقرار ثبت و حواله اعزام تکنسین صادر شد.');
+      document.getElementById('form-deployment').reset();
+    }
+
+    // Submit Emergency Repair Ticket
+    function handleRepairSubmit(e) {
+      e.preventDefault();
+      const isHalted = document.getElementById('rep-halted').value === 'yes';
+      const newTicket = {
+        id: `TCK-${Math.floor(10000 + Math.random() * 90000)}`,
+        type: 'تعمیرات اضطراری',
+        customer: document.getElementById('rep-customer').value,
+        serial: document.getElementById('rep-serial').value,
+        technician: document.getElementById('rep-tech').value,
+        date: 'هم‌اکنون',
+        status: isHalted ? 'urgent' : 'pending',
+        statusLabel: isHalted ? 'خط متوقف (اورژانس)' : 'در حال بررسی عیب',
+        badge: isHalted ? 'badge-danger pulse' : 'badge-warning'
+      };
+
+      activeTasks.unshift(newTicket);
+      renderTasksTable();
+      updateKPIs();
+      showToast('تیکت اضطراری با موفقیت ثبت شد و پیامک به کشیک پشتیبانی ارسال گردید.');
+      document.getElementById('form-repair').reset();
+    }
+
+    // Submit Final Handover Report
+    function handleReportSubmit(e) {
+      e.preventDefault();
+      const reqId = document.getElementById('rep-req-id').value;
+      const signatory = document.getElementById('rep-signatory').value;
+      const rating = document.getElementById('rep-rating').value;
+
+      // Add to completed reports
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>DOC-${Math.floor(1000 + Math.random() * 9000)}</strong></td>
+        <td>${signatory}</td>
+        <td>${reqId}</td>
+        <td>هم‌اکنون</td>
+        <td><span class="badge badge-success">تایید ۱۰۰٪</span></td>
+        <td>${rating} از ۵ ⭐</td>
+        <td><button class="btn btn-outline btn-sm" onclick="window.print()">چاپ صورتجلسه</button></td>
+      `;
+      document.getElementById('completed-reports-tbody').prepend(tr);
+
+      // Finish matching task if found
+      activeTasks = activeTasks.filter(t => t.id !== reqId);
+      renderTasksTable();
+      updateKPIs();
+
+      showToast('صورتجلسه اتمام با موفقیت ثبت شد و گواهی گارانتی ۳۶ ماهه صادر گردید.');
+    }
+
+    // Quick Task Finish
+    function finishTask(taskId) {
+      document.getElementById('rep-req-id').value = taskId;
+      switchTab('tab-reports');
+      showToast(`کد ${taskId} در فرم گزارش بارگذاری شد. لطفاً صورتجلسه را تایید فرمایید.`);
+    }
+
+    // New Kardex Entry
+    function handleNewKardexEntry(e) {
+      e.preventDefault();
+      const voucher = document.getElementById('k-voucher').value;
+      const date = document.getElementById('k-date').value;
+      const name = document.getElementById('k-item').value;
+      const type = document.getElementById('k-type').value;
+      const action = document.getElementById('k-action').value;
+      const qty = parseInt(document.getElementById('k-qty').value, 10);
+      const tech = document.getElementById('k-tech').value;
+      const target = document.getElementById('k-target').value;
+
+      // Calculate new balance
+      const lastRec = kardexRecords.filter(r => r.name === name).pop();
+      const currentBal = lastRec ? lastRec.balance : 0;
+      const newBal = action === 'in' ? currentBal + qty : Math.max(0, currentBal - qty);
+
+      const entry = {
+        id: kardexRecords.length + 1,
+        date: date,
+        voucher: voucher,
+        name: name,
+        type: type,
+        inQty: action === 'in' ? qty : 0,
+        outQty: action === 'out' ? qty : 0,
+        balance: newBal,
+        technician: tech,
+        target: target
+      };
+
+      kardexRecords.unshift(entry);
+      filterKardex();
+      updateKPIs();
+      closeModal('kardex-modal');
+      showToast('سند کاردکس با موفقیت ثبت گردید.');
+    }
+
+    // Dynamic Fields Support
+    function removeDynamicField(btn) {
+      btn.closest('tr').remove();
+      showToast('فیلد داینامیک حذف شد.');
+    }
+
+    function openDynamicFieldModal() {
+      const fieldName = prompt('عنوان فیلد آزمون یا پارامتر جدید را وارد کنید:');
+      if (!fieldName) return;
+      const tbody = document.getElementById('dynamic-fields-tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${fieldName}</td>
+        <td>عددی / متنی</td>
+        <td><span class="badge badge-danger">بله</span></td>
+        <td><button class="btn btn-outline btn-sm" onclick="removeDynamicField(this)">✕</button></td>
+      `;
+      tbody.appendChild(tr);
+      showToast(`فیلد "${fieldName}" به فرم آزمون اضافه شد.`);
+    }
+
+    function addToolboxPrompt() {
+      const title = prompt('نام انبارک یا جعبه ابزار جدید:');
+      const tech = prompt('نام تکنسین مسئول:');
+      if (title && tech) {
+        const tbody = document.getElementById('toolboxes-tbody');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>TB-${Math.floor(100 + Math.random() * 900)}</strong></td>
+          <td>${title}</td>
+          <td>${tech}</td>
+          <td>نصب و خدمات</td>
+          <td><span class="badge badge-success">فعال</span></td>
+        `;
+        tbody.appendChild(tr);
+        showToast('انبارک جدید تعریف شد.');
+      }
+    }
+
+    // UI Helpers
+    function toggleHaltStyle(val) {
+      const card = document.getElementById('form-repair').closest('.card');
+      if (val === 'yes') {
+        card.style.borderColor = 'var(--danger)';
+      } else {
+        card.style.borderColor = 'var(--slate-200)';
+      }
+    }
+
+    function fillSampleReport() {
+      document.getElementById('rep-req-id').value = 'REQ-DEP-9941';
+      document.getElementById('rep-signatory').value = 'مهندس ابراهیمی (مدیر فنی کارخانه)';
+      document.getElementById('rep-insulation').value = '180';
+      document.getElementById('rep-temp').value = '25';
+      showToast('اطلاعات نمونه بارگذاری شد.');
+    }
+
+    function printHandover(docNum) {
+      alert(`در حال آماده‌سازی نسخه چاپی صورتجلسه شماره ${docNum} به همراه نشان استاندارد پارس...`);
+      window.print();
+    }
+
+    function exportKardexCSV() {
+      let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+      csvContent += "ردیف,تاریخ,شماره سند,شرح کالا,نوع,وارده,صادره,مانده,تکنسین,مشتری\n";
+      kardexRecords.forEach((r, i) => {
+        csvContent += `${i+1},${r.date},${r.voucher},${r.name},${r.type},${r.inQty},${r.outQty},${r.balance},${r.technician},${r.target}\n`;
+      });
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "after_sales_kardex_report.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('فایل اکسل (CSV) کاردکس با موفقیت دانلود شد.');
+    }
+
+    function updateKPIs() {
+      document.getElementById('kpi-deploy-count').innerText = activeTasks.filter(t => t.type.includes('استقرار')).length;
+      document.getElementById('kpi-emergency-count').innerText = activeTasks.filter(t => t.status === 'urgent').length;
+      const totalBalance = kardexRecords.reduce((sum, r) => sum + (r.balance || 0), 0);
+      document.getElementById('kpi-toolbox-count').innerText = totalBalance;
+    }
+
+    function openAddKardexModal() {
+      document.getElementById('kardex-modal').classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

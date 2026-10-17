@@ -3,7 +3,6 @@ import { TargetGroup } from '../../types';
 import {
   FileText,
   Save,
-  RotateCcw,
   CheckCircle2,
   GitBranch,
   Building,
@@ -196,18 +195,6 @@ export const GroupForm: React.FC<GroupFormProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => {
-                if (selectedGroup) setFormData(selectedGroup);
-              }}
-              className="flex items-center gap-1 text-slate-600 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
-              title="بازنشانی به مقادیر اصلی گروه"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>بازنشانی</span>
-            </button>
-
             <button
               type="submit"
               id="btn-save-group"

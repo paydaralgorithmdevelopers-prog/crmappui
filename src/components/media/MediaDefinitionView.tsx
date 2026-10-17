@@ -29,15 +29,17 @@ import {
 } from 'lucide-react';
 
 interface MediaDefinitionViewProps {
+  mediaList: MediaChannel[];
+  onUpdateMediaList: (newList: MediaChannel[]) => void;
   onBackToCustomerGroups?: () => void;
 }
 
 export const MediaDefinitionView: React.FC<MediaDefinitionViewProps> = ({
+  mediaList,
+  onUpdateMediaList,
   onBackToCustomerGroups,
 }) => {
-  // All media list (initialized with pre-defined backend media)
-  const [mediaList, setMediaList] = useState<MediaChannel[]>(initialPredefinedMedia);
-  const [selectedMediaId, setSelectedMediaId] = useState<string>(initialPredefinedMedia[0].id);
+  const [selectedMediaId, setSelectedMediaId] = useState<string>(mediaList[0]?.id || '');
 
   // Current media being edited
   const currentMedia = mediaList.find((m) => m.id === selectedMediaId) || mediaList[0];
@@ -141,7 +143,7 @@ export const MediaDefinitionView: React.FC<MediaDefinitionViewProps> = ({
       })),
     };
 
-    setMediaList((prev) => [newMedia, ...prev]);
+    onUpdateMediaList([newMedia, ...mediaList]);
     handleSelectMedia(newMedia);
   };
 
@@ -189,8 +191,8 @@ export const MediaDefinitionView: React.FC<MediaDefinitionViewProps> = ({
       updatedAt: '۱۴۰۵/۱۱/۱۸',
     };
 
-    setMediaList((prev) =>
-      prev.map((m) => (m.id === updated.id ? updated : m))
+    onUpdateMediaList(
+      mediaList.map((m) => (m.id === updated.id ? updated : m))
     );
 
     setSavedSuccess(true);
@@ -364,16 +366,6 @@ export const MediaDefinitionView: React.FC<MediaDefinitionViewProps> = ({
                   اطلاعات رسانه و تارگت‌ها ذخیره شد
                 </span>
               )}
-
-              <button
-                type="button"
-                onClick={handleResetToTemplate}
-                className="flex items-center gap-1 text-slate-600 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer"
-                title="بازنشانی فیلدهای این تایپ به پیش‌فرض هرمی بک‌اند"
-              >
-                <RotateCcw className="w-3 h-3" />
-                <span>بازیابی فیلدهای پیش‌فرض</span>
-              </button>
             </div>
           </div>
 
@@ -421,12 +413,45 @@ export const MediaDefinitionView: React.FC<MediaDefinitionViewProps> = ({
                     onChange={(e) => handleMainTypeChange(e.target.value as MainMediaType)}
                     className="w-full bg-white border-2 border-indigo-200 focus:border-indigo-500 rounded-lg px-2.5 py-1.5 text-slate-800 font-bold focus:outline-hidden focus:ring-1 focus:ring-indigo-500 text-xs shadow-2xs"
                   >
-                    <option value="linkedin">لینکدین (LinkedIn B2B) - شبکه‌های اجتماعی سازمانی</option>
-                    <option value="website">وب‌سایت و پورتال سازمانی (Corporate Website) - رسانه اختصاصی</option>
-                    <option value="instagram">اینستاگرام سازمانی (Instagram Business) - رسانه بصری</option>
-                    <option value="sms">سامانه پیامک هدفمند صنعتی (Industrial SMS) - ارتباط مستقیم</option>
-                    <option value="exhibition">نمایشگاه و رویدادهای تخصصی (Expo & Events) - رویدادی</option>
-                    <option value="email">ایمیل مارکتینگ سازمانی (Corporate B2B Email) - بازاریابی ایمیلی</option>
+                    <optgroup label="رسانه‌های اجتماعی و عمومی">
+                      <option value="linkedin">لینکدین (LinkedIn)</option>
+                      <option value="instagram">اینستاگرام (Instagram)</option>
+                      <option value="facebook">فیسبوک (Facebook)</option>
+                      <option value="twitter">ایکس / توییتر (X)</option>
+                      <option value="threads">تردز (Threads)</option>
+                      <option value="youtube">یوتیوب (YouTube)</option>
+                      <option value="tiktok">تیک‌تاک (TikTok)</option>
+                      <option value="pinterest">پینترست (Pinterest)</option>
+                    </optgroup>
+                    <optgroup label="پیام‌رسان‌ها و ارتباط مستقیم">
+                      <option value="whatsapp">واتساپ (WhatsApp)</option>
+                      <option value="telegram">تلگرام (Telegram)</option>
+                      <option value="eitaa">ایتا (Eitaa)</option>
+                      <option value="rubika">روبیکا (Rubika)</option>
+                      <option value="bale">بله (Bale)</option>
+                      <option value="soroush">سروش پلاس (Soroush+)</option>
+                      <option value="sms">پیامک (SMS)</option>
+                      <option value="email">ایمیل (Email)</option>
+                      <option value="phone">تماس تلفنی (Phone)</option>
+                    </optgroup>
+                    <optgroup label="رسانه‌های فیزیکی و رویدادی">
+                      <option value="exhibition">نمایشگاه (Exhibition)</option>
+                      <option value="event">رویداد (Event)</option>
+                      <option value="outdoor">تبلیغات محیطی (Outdoor)</option>
+                      <option value="printed">رسانه‌های چاپی (Printed)</option>
+                      <option value="direct_mail">ارسال مستقیم (Direct Mail)</option>
+                    </optgroup>
+                    <optgroup label="رسانه‌های دیجیتال و تبلیغات آنلاین">
+                      <option value="website">وب‌سایت (Website)</option>
+                      <option value="mobile_app">اپلیکیشن موبایل (Mobile App)</option>
+                      <option value="google_ads">گوگل ادز (Google Ads)</option>
+                      <option value="digital_ads">تبلیغات دیجیتال (Native/Display)</option>
+                      <option value="influencer">اینفلوئنسر مارکتینگ</option>
+                      <option value="aparat">آپارات (Aparat)</option>
+                      <option value="webinar">وبینار (Webinar)</option>
+                      <option value="video_call">جلسه تصویری (Video Call)</option>
+                      <option value="audio_visual">رسانه‌های صوتی و تصویری</option>
+                    </optgroup>
                   </select>
                 </div>
               </div>
@@ -466,13 +491,18 @@ export const MediaDefinitionView: React.FC<MediaDefinitionViewProps> = ({
                   <label className="block text-slate-600 mb-1">
                     کارشناس / مسئول رسانه
                   </label>
-                  <input
-                    type="text"
+                  <select
                     value={manager}
                     onChange={(e) => setManager(e.target.value)}
-                    placeholder="مدیر یا کارشناس مربوطه"
                     className="w-full bg-white border border-slate-200 rounded-md px-2 py-1 text-slate-700 text-xs"
-                  />
+                  >
+                    <option value="">انتخاب کارشناس...</option>
+                    <option value="مهندس احمدی">مهندس احمدی</option>
+                    <option value="سارا رضایی">سارا رضایی</option>
+                    <option value="علی کریمی">علی کریمی</option>
+                    <option value="مریم سعادتی">مریم سعادتی</option>
+                    <option value="کارشناس توسعه بازار">کارشناس توسعه بازار</option>
+                  </select>
                 </div>
 
                 <div>
@@ -544,15 +574,6 @@ export const MediaDefinitionView: React.FC<MediaDefinitionViewProps> = ({
               </div>
 
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleSelectMedia(currentMedia)}
-                  className="flex items-center gap-1 text-slate-600 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>بازنشانی</span>
-                </button>
-
                 <button
                   type="submit"
                   className="flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition-all shadow-xs hover:shadow-sm cursor-pointer"

@@ -189,50 +189,16 @@ export const LeadSelector: React.FC<LeadSelectorProps> = ({
               </div>
             </div>
 
-            {/* Customer Group Filter */}
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-slate-600 pr-1">گروه مشتری:</label>
-              <select
-                value={selectedIndustryFilter}
-                onChange={(e) => setSelectedIndustryFilter(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-2 text-slate-700 text-xs focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition-all"
+            {/* Assignment Toggle - Removed and replaced by Advanced Search */}
+            <div className="md:col-span-1 lg:col-span-2">
+              <button
+                type="button"
+                className="w-full h-10 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 hover:border-rose-300 rounded-lg text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 active:scale-[0.98]"
               >
-                <option value="all">تمام گروه‌ها</option>
-                <option value="فولاد و متالورژی">فولاد و متالورژی</option>
-                <option value="نفت و پتروشیمی">نفت و پتروشیمی</option>
-                <option value="پیمانکاری و مهندسی تاسیسات">پیمانکاری و مهندسی تاسیسات</option>
-                <option value="صنایع سنگین و مادر">صنایع سنگین و مادر</option>
-                <option value="عمران و ساختمان">عمران و ساختمان</option>
-                <option value="بازرگانی و فروشگاهی">بازرگانی و فروشگاهی</option>
-                <option value="آب و فاضلاب">آب و فاضلاب</option>
-              </select>
+                <SlidersHorizontal className="w-4 h-4 text-rose-600" />
+                <span>جستجوی پیشرفته</span>
+              </button>
             </div>
-
-            {/* Assignment Toggle */}
-            <div className="flex items-center h-10">
-              <label className="flex items-center gap-2.5 text-slate-700 cursor-pointer select-none bg-white border border-slate-200 px-3 py-2 rounded-lg hover:border-rose-300 transition-colors w-full">
-                <input
-                  type="checkbox"
-                  checked={showOnlyAssigned}
-                  onChange={(e) => setShowOnlyAssigned(e.target.checked)}
-                  className="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-slate-300"
-                />
-                <span className="text-xs font-medium">فقط نمایش منتسب شده‌ها</span>
-              </label>
-            </div>
-
-            {/* Bulk Action */}
-            <button
-              type="button"
-              onClick={() => {
-                const filteredIds = filteredLeads.map((l) => l.id);
-                onBulkAssignLeads(filteredIds);
-              }}
-              className="h-10 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 active:scale-[0.98]"
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>انتساب تمام موارد فیلتر شده</span>
-            </button>
           </div>
         </div>
 

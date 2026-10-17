@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Download, Calendar, Clock, Activity, Save, FileText, CheckCircle, Hash, Briefcase, Radio, Megaphone, Users } from 'lucide-react';
+import { Download, Calendar, Clock, Activity, Save, FileText, CheckCircle, Hash, Briefcase, Radio, Megaphone, Users, History as HistoryIcon } from 'lucide-react';
 import { initialPredefinedMedia } from '../../data/mediaData';
 
 interface ReceiveSignalViewProps {
@@ -202,6 +202,60 @@ export const ReceiveSignalView: React.FC<ReceiveSignalViewProps> = ({ onBack }) 
             </button>
           </div>
         </form>
+
+        {/* History of Recorded Records Section */}
+        <div className="border-t border-slate-200 mt-2">
+          <div className="px-4 py-3 bg-slate-50/50 border-b border-slate-200 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <HistoryIcon className="w-4 h-4 text-slate-500" />
+              <h2 className="font-bold text-xs text-slate-700">فهرست سوابق ثبت شده (بر اساس تاریخ)</h2>
+            </div>
+            <span className="text-[10px] text-slate-400 font-medium">نمایش ۱۰ مورد اخیر</span>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full text-right text-[11px]">
+              <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
+                <tr>
+                  <th className="px-4 py-2 font-bold">شناسه دریافت</th>
+                  <th className="px-4 py-2 font-bold">تاریخ و زمان</th>
+                  <th className="px-4 py-2 font-bold">مخاطب</th>
+                  <th className="px-4 py-2 font-bold">سیگنال ارسالی مرجع</th>
+                  <th className="px-4 py-2 font-bold">وضعیت ثبت</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {[
+                  { id: 'REC-9921', date: '۱۴۰۵/۱۱/۲۰', time: '۱۰:۳۰', audience: 'شرکت پتروشیمی زاگرس', source: 'SND-10045', status: 'تایید شده' },
+                  { id: 'REC-9918', date: '۱۴۰۵/۱۱/۱۹', time: '۱۴:۱۵', audience: 'فولاد مبارکه اصفهان', source: 'SND-20098', status: 'در حال بررسی' },
+                  { id: 'REC-9915', date: '۱۴۰۵/۱۱/۱۸', time: '۰۹:۴۵', audience: 'پالایشگاه نفت پارس', source: 'SND-20098', status: 'تایید شده' },
+                ].map((row, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-4 py-2.5 font-mono text-slate-600">{row.id}</td>
+                    <td className="px-4 py-2.5">
+                      <div className="flex flex-col">
+                        <span className="text-slate-800">{row.date}</span>
+                        <span className="text-slate-400 text-[10px]">{row.time}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-2.5 font-bold text-slate-700">{row.audience}</td>
+                    <td className="px-4 py-2.5 text-teal-600 font-medium">{row.source}</td>
+                    <td className="px-4 py-2.5">
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                        row.status === 'تایید شده' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'
+                      }`}>
+                        {row.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {MOCK_SENT_SIGNALS.length === 0 && (
+            <div className="py-8 text-center text-slate-400 italic">سابقه‌ای برای این سیگنال یافت نشد.</div>
+          )}
+        </div>
       </div>
     </div>
   );

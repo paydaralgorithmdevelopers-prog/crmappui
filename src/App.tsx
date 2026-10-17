@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { initialTargetGroups, initialLeads } from './data/initialData';
-import { TargetGroup, Lead } from './types';
+import { TargetGroup, Lead, MediaChannel } from './types';
 import { Header } from './components/layout/Header';
 import { TabBar } from './components/layout/TabBar';
 import { Sidebar } from './components/layout/Sidebar';
@@ -9,6 +9,10 @@ import { GroupForm } from './components/groups/GroupForm';
 import { LeadSelector } from './components/leads/LeadSelector';
 import { MediaDefinitionView } from './components/media/MediaDefinitionView';
 import { SignalDefinitionView } from './components/media/SignalDefinitionView';
+import { ComprehensiveLeadReportView } from './components/leads/ComprehensiveLeadReportView';
+import { LeadTimelineReportView } from './components/leads/LeadTimelineReportView';
+import { ProductDefinitionView } from './components/sales/ProductDefinitionView';
+import { ProductPricingView } from './components/sales/ProductPricingView';
 import { CampaignDefinitionView } from './components/campaign/CampaignDefinitionView';
 import { SendSignalView } from './components/media/SendSignalView';
 import { ReceiveSignalView } from './components/media/ReceiveSignalView';
@@ -18,6 +22,8 @@ import { ReceivedSignalMetricsHistoryView } from './components/media/ReceivedSig
 import { CampaignMetricsHistoryView } from './components/campaign/CampaignMetricsHistoryView';
 import { OperationGanttView } from './components/campaign/OperationGanttView';
 import { PulseOperationalDashboard } from './components/media/PulseOperationalDashboard';
+import { MediaOperationalDashboard } from './components/media/MediaOperationalDashboard';
+import { CampaignOperationalDashboard } from './components/campaign/CampaignOperationalDashboard';
 import { CreateOpportunityView } from './components/opportunity/CreateOpportunityView';
 import { CreateProformaInvoiceView } from './components/sales/CreateProformaInvoiceView';
 import { CreateInvoiceView } from './components/sales/CreateInvoiceView';
@@ -34,14 +40,38 @@ import { RepairReportView } from './components/aftersales/RepairReportView';
 import { TargetCalendarView } from './components/commission/TargetCalendarView';
 import { ProductGroupsTargetView } from './components/commission/ProductGroupsTargetView';
 import { GeographicGroupsTargetView } from './components/commission/GeographicGroupsTargetView';
+import { ComprehensiveTargetCommissionReportView } from './components/commission/ComprehensiveTargetCommissionReportView';
 import { TeamMemberSettingsView } from './components/commission/TeamMemberSettingsView';
 import { CommissionTiersView } from './components/commission/CommissionTiersView';
 import { TargetAllocationView } from './components/commission/TargetAllocationView';
 import { CommissionCalculationView } from './components/commission/CommissionCalculationView';
 import { CommissionPaymentRequestView } from './components/commission/CommissionPaymentRequestView';
-import { ComprehensiveTargetReportView } from './components/commission/ComprehensiveTargetReportView';
-import { TeamAchievementReportView } from './components/commission/TeamAchievementReportView';
-import { CommissionBalanceReportView } from './components/commission/CommissionBalanceReportView';
+import { IndirectPayrollForecastView } from './components/budget/IndirectPayrollForecastView';
+import { OtherIncomeExpenseForecastView } from './components/budget/OtherIncomeExpenseForecastView';
+import { InflationAndPurchasePriceForecastView } from './components/budget/InflationAndPurchasePriceForecastView';
+import { SecondaryExchangeRateResearchView } from './components/budget/SecondaryExchangeRateResearchView';
+import { SalesVarianceControlReportView } from './components/budget/SalesVarianceControlReportView';
+import { IndirectPayrollControlReportView } from './components/budget/IndirectPayrollControlReportView';
+import { OtherIncomeExpenseControlReportView } from './components/budget/OtherIncomeExpenseControlReportView';
+import { BudgetaryPLStatementView } from './components/budget/BudgetaryPLStatementView';
+import { PriceIncreaseControlReportView } from './components/budget/PriceIncreaseControlReportView';
+import { ProcessDefinitionView } from './components/bpms/ProcessDefinitionView';
+import { ProcessInstancesView } from './components/bpms/ProcessInstancesView';
+import { ProcessDashboardView } from './components/bpms/ProcessDashboardView';
+import { TreasuryDefinitionsView } from './components/bpms/TreasuryDefinitionsView';
+import { TreasuryOperationsView } from './components/bpms/TreasuryOperationsView';
+import { CheckOperationsView } from './components/bpms/CheckOperationsView';
+import { TreasuryReportsView } from './components/bpms/TreasuryReportsView';
+import { PettyCashOperationView } from './components/bpms/PettyCashOperationView';
+import { BPMSAccessLevelsView } from './components/bpms/BPMSAccessLevelsView';
+import { SmartAttendancePage } from './components/hcm/SmartAttendancePage';
+import { AttendanceQrDisplayPage } from './components/hcm/AttendanceQrDisplayPage';
+import { LocationDefinitionPage } from './components/hcm/LocationDefinitionPage';
+import { AttendanceReportsPage } from './components/hcm/AttendanceReportsPage';
+import { WorkflowAnalysisPage } from './components/bpms/WorkflowAnalysisPage';
+import { Dashboard } from './components/Dashboard';
+import { initialPredefinedMedia } from './data/mediaData';
+import { ProcessDefinition, ProcessInstance } from './types';
 import {
   FolderTree,
   FileSpreadsheet,
@@ -50,95 +80,213 @@ import {
   Sparkles,
   HelpCircle,
   ChevronRight,
-  Radio
+  Radio,
+  Users,
+  Layers,
+  Award,
+  LayoutGrid
 } from 'lucide-react';
+
+interface Tab {
+  id: string;
+  title: string;
+  icon?: any;
+  isPrimary?: boolean;
+  closable?: boolean;
+}
+
+interface PinnedItem {
+  id: string;
+  title: string;
+  type: 'definition' | 'operation' | 'report';
+  icon?: any;
+}
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('customer-groups');
   const [activeMenuItem, setActiveMenuItem] = useState('customer-groups');
+  const [selectedProcessId, setSelectedProcessId] = useState<string | number | null>(null);
+
+  const [tabs, setTabs] = useState<Tab[]>([
+    { id: 'customer-groups', title: 'تعریف گروه هدف', icon: Users, isPrimary: true, closable: false },
+    { id: 'my-dashboard', title: 'میز کار من', icon: Layers, closable: false },
+  ]);
+
+  const [pinnedItems, setPinnedItems] = useState<PinnedItem[]>([
+    { id: 'customer-groups', title: 'تعریف گروه هدف', type: 'definition', icon: Users },
+    { id: 'create-process', title: 'ایجاد روند', type: 'definition' },
+    { id: 'bpms-ops-dashboard', title: 'داشبورد عملیاتی روندها', type: 'operation' },
+    { id: 'bpms-workflow-analysis', title: 'روندنما', type: 'report' },
+  ]);
+
+  const handleTogglePin = (id: string, title: string, type: 'definition' | 'operation' | 'report', icon?: any) => {
+    setPinnedItems(prev => {
+      const exists = prev.find(item => item.id === id);
+      if (exists) {
+        return prev.filter(item => item.id !== id);
+      }
+      return [...prev, { id, title, type, icon }];
+    });
+  };
+
+  const handleCloseTab = (tabId: string) => {
+    setTabs(prev => {
+      const newTabs = prev.filter(t => t.id !== tabId);
+      if (activeTab === tabId && newTabs.length > 0) {
+        setActiveTab(newTabs[newTabs.length - 1].id);
+        setActiveMenuItem(newTabs[newTabs.length - 1].id);
+      }
+      return newTabs;
+    });
+  };
+
+  const openTab = (id: string, title: string, icon?: any) => {
+    setTabs(prev => {
+      const exists = prev.find(t => t.id === id);
+      if (exists) return prev;
+      return [...prev, { id, title, icon, closable: true }];
+    });
+    setActiveTab(id);
+    setActiveMenuItem(id);
+  };
+
+  const [processDefinitions, setProcessDefinitions] = useState<ProcessDefinition[]>([
+    { 
+      id: 1, 
+      title: 'روند درخواست خرید کالا', 
+      code: 'PR-001', 
+      version: '2.1', 
+      status: 'active', 
+      creator: 'سهراب ابراهیمی', 
+      createDate: '۱۴۰۵/۰۱/۱۵',
+      usageCount: 124
+    },
+    { 
+      id: 2, 
+      title: 'روند تایید فاکتور فروش', 
+      code: 'SI-005', 
+      version: '1.0', 
+      status: 'draft', 
+      creator: 'مریم حسینی', 
+      createDate: '۱۴۰۵/۰۵/۰۲',
+      usageCount: 0
+    },
+    { 
+      id: 3, 
+      title: 'روند مرخصی کارکنان', 
+      code: 'HR-L01', 
+      version: '3.4', 
+      status: 'active', 
+      creator: 'علیرضا کریمی', 
+      createDate: '۱۴۰۴/۱۲/۲۰',
+      usageCount: 567
+    }
+  ]);
+
+  const [processInstances, setProcessInstances] = useState<ProcessInstance[]>([
+    { id: '1', processDefinitionId: 1, title: 'خرید تجهیزات شبکه دفتر مرکزی', createdAt: '۱۴۰۵/۰۶/۱۰', lastUpdate: '۱۴۰۵/۰۶/۱۵', currentStage: 'تایید نهایی مدیر مالی', progress: 85, responsible: 'سارا رضایی' },
+    { id: '2', processDefinitionId: 1, title: 'خرید لوازم مصرفی انبار', createdAt: '۱۴۰۵/۰۶/۱۲', lastUpdate: '۱۴۰۵/۰۶/۱۳', currentStage: 'بررسی واحد تدارکات', progress: 40, responsible: 'رضا احمدی' },
+    { id: '3', processDefinitionId: 3, title: 'درخواست مرخصی استحقاقی - سپهر ناصری', createdAt: '۱۴۰۵/۰۶/۱۴', lastUpdate: '۱۴۰۵/۰۶/۱۴', currentStage: 'تایید مدیر مستقیم', progress: 20, responsible: 'علیرضا کریمی' },
+  ]);
 
   const handleSelectMenuItem = (item: string) => {
-    setActiveMenuItem(item);
-    if (item === 'media-definition') {
-      setActiveTab('media-definition');
-    } else if (item === 'signal-definition') {
-      setActiveTab('signal-definition');
-    } else if (item === 'create-campaign') {
-      setActiveTab('create-campaign');
-    } else if (item === 'send-signal') {
-      setActiveTab('send-signal');
-    } else if (item === 'signal-feedback') {
-      setActiveTab('signal-feedback');
-    } else if (item === 'sent-signal-metrics') {
-      setActiveTab('sent-signal-metrics');
-    } else if (item === 'received-signal-metrics') {
-      setActiveTab('received-signal-metrics');
-    } else if (item === 'media-metrics') {
-      setActiveTab('media-metrics');
-    } else if (item === 'campaign-metrics') {
-      setActiveTab('campaign-metrics');
-    } else if (item === 'operational-calendar') {
-      setActiveTab('operational-calendar');
-    } else if (item === 'pulse-ops-report') {
-      setActiveTab('pulse-ops-report');
-    } else if (item === 'create-opportunity') {
-      setActiveTab('create-opportunity');
-    } else if (item === 'deployment-management') {
-      setActiveTab('deployment-management');
-    } else if (item === 'maintenance-management') {
-      setActiveTab('maintenance-management');
-    } else if (item === 'failure-management') {
-      setActiveTab('failure-management');
-    } else if (item === 'toolbox-definition') {
-      setActiveTab('toolbox-definition');
-    } else if (item === 'req-deployment') {
-      setActiveTab('req-deployment');
-    } else if (item === 'req-maintenance') {
-      setActiveTab('req-maintenance');
-    } else if (item === 'req-repairs') {
-      setActiveTab('req-repairs');
-    } else if (item === 'rep-repairs') {
-      setActiveTab('rep-repairs');
-    } else if (item === 'rep-maintenance') {
-      setActiveTab('rep-maintenance');
-    } else if (item === 'rep-deployment') {
-      setActiveTab('rep-deployment');
-    } else if (
-      [
-        'target-calendar',
-        'target-product-groups',
-        'target-geo-groups',
-        'target-team-members',
-        'commission-tiers',
-        'target-allocation',
-        'commission-calculation',
-        'commission-payment-request',
-        'comprehensive-target-report',
-        'team-achievement-report',
-        'commission-balance-report',
-      ].includes(item)
-    ) {
+    if (item === 'my-dashboard') {
+      setActiveTab('my-dashboard');
+      setActiveMenuItem('my-dashboard');
+      return;
+    }
+
+    if (item === 'bpms-ops-dashboard') {
+      openTab('bpms-ops-dashboard', 'داشبورد عملیاتی روندها', LayoutGrid);
+      setSelectedProcessId(null);
+      return;
+    }
+
+    // Mapping of menu IDs to titles for dynamic tab creation
+    const menuTitles: Record<string, string> = {
+      'customer-groups': 'تعریف گروه هدف',
+      'media-definition': 'تعریف رسانه',
+      'signal-definition': 'تعریف سیگنال',
+      'create-campaign': 'ایجاد کمپین',
+      'send-signal': 'ثبت ارسال سیگنال',
+      'signal-feedback': 'ثبت دریافت سیگنال',
+      'sent-signal-metrics': 'ثبت سابقه اطلاعات و متریک سیگنال ارسالی',
+      'received-signal-metrics': 'ثبت سابقه اطلاعات و متریک سیگنال دریافتی',
+      'media-metrics': 'ثبت سابقه اطلاعات رسانه',
+      'campaign-metrics': 'ثبت سابقه اطلاعات کمپین',
+      'operational-calendar': 'تقویم عملیاتی',
+      'pulse-ops-report': 'گزارش عملیاتی سیگنال',
+      'media-ops-report': 'گزارش عملیاتی رسانه',
+      'campaign-ops-report': 'گزارش عملیاتی کمپین',
+      'create-opportunity': 'ایجاد فرصت',
+      'deployment-management': 'تعریف انواع نصب و راه اندازی محصول',
+      'maintenance-management': 'تعریف انواع نگهداشت محصول',
+      'failure-management': 'تعریف انواع خرابی محصول',
+      'toolbox-definition': 'تعریف جعبه ابزار خدمات پس از فروش',
+      'req-deployment': 'ثبت درخواست استقرار',
+      'req-maintenance': 'ثبت درخواست نگهداشت',
+      'req-repairs': 'ثبت درخواست تعمیرات',
+      'rep-repairs': 'ثبت گزارش تعمیرات',
+      'rep-maintenance': 'ثبت گزارش نگهداشت',
+      'rep-deployment': 'ثبت گزارش استقرار',
+      'target-calendar': 'تقویم تارگت',
+      'target-product-groups': 'گروه‌های محصول',
+      'target-geo-groups': 'گروه‌های جغرافیایی',
+      'target-team-members': 'تنظیمات تیم و افراد',
+      'commission-tiers': 'پلکان پورسانت',
+      'target-allocation': 'تخصیص تارگت',
+      'commission-calculation': 'محاسبه پورسانت',
+      'commission-payment-request': 'درخواست پرداخت پورسانت',
+      'comprehensive-target-commission-report': 'گزارش جامع تارگت و پورسانت',
+      'indirect-payroll-forecast': 'پیشبینی حقوق و دستمزد',
+      'other-income-expense-forecast': 'پیشبینی سایر درآمدها',
+      'inflation-purchase-price-forecast': 'پیشبینی نرخ تورم',
+      'secondary-exchange-research': 'پیشبینی نرخ ارز',
+      'sales-variance-control-report': 'کنترل جامع فروش',
+      'indirect-payroll-control-report': 'کنترل حقوق و دستمزد',
+      'other-income-expense-control-report': 'کنترل سایر درآمدها',
+      'budgetary-pl-statement': 'صورت سود و زیان بودجه‌ای',
+      'price-increase-control': 'کنترل افزایش قیمت',
+      'create-process': 'ایجاد روند',
+      'bpms-access-levels': 'تنظیمات سطح دسترسی',
+      'crm-comprehensive-lead-report': 'گزارش جامع سرنخ',
+      'crm-timeline-report': 'گزارش تایم‌لاین',
+      'bpms-workflow-analysis': 'روندنما',
+      'hr-smart-attendance': 'ثبت تردد هوشمند',
+      'hr-qr-display': 'نمایش QR تردد',
+      'hr-location-definition': 'تعریف لوکیشن',
+      'hr-attendance-log': 'گزارش ترددها',
+      'issue-proforma': 'صدور پیش فاکتور',
+      'issue-invoice': 'صدور فاکتور',
+    };
+
+    if (item.startsWith('treasury-')) {
+      openTab(item, item.split('-').pop() || 'خزانه‌داری');
+      return;
+    }
+
+    if (menuTitles[item]) {
+      openTab(item, menuTitles[item]);
+    } else {
+      setActiveMenuItem(item);
       setActiveTab(item);
-    } else if (item === 'customer-groups' || item === 'target-group-definition') {
-      setActiveTab('customer-groups');
     }
   };
 
   const handleSelectTab = (tabId: string) => {
     setActiveTab(tabId);
-    if (tabId === 'media-definition') {
-      setActiveMenuItem('media-definition');
-    } else if (tabId === 'customer-groups') {
-      setActiveMenuItem('customer-groups');
-    } else {
-      setActiveMenuItem(tabId);
-    }
+    setActiveMenuItem(tabId);
   };
 
   const [groups, setGroups] = useState<TargetGroup[]>(initialTargetGroups);
   const [leads, setLeads] = useState<Lead[]>(initialLeads);
+  const [mediaList, setMediaList] = useState<MediaChannel[]>(initialPredefinedMedia);
   const [selectedGroupId, setSelectedGroupId] = useState<string>(initialTargetGroups[0].id);
+
+  const handleUpdateMediaList = (newList: MediaChannel[]) => {
+    setMediaList(newList);
+  };
 
   // Find currently selected group
   const currentGroup = groups.find((g) => g.id === selectedGroupId) || groups[0];
@@ -243,6 +391,9 @@ export default function App() {
         isOpen={sidebarOpen}
         activeMenuItem={activeMenuItem}
         setActiveMenuItem={handleSelectMenuItem}
+        processDefinitions={processDefinitions}
+        onTogglePin={handleTogglePin}
+        pinnedIds={pinnedItems.map(p => p.id)}
       />
 
       {/* Main App Workspace */}
@@ -256,81 +407,181 @@ export default function App() {
         {/* Tab Bar (Browser/ERP-like tab bar) */}
         <TabBar
           activeTab={activeTab}
+          tabs={tabs}
           setActiveTab={handleSelectTab}
+          onCloseTab={handleCloseTab}
         />
 
         {/* Scrollable View Area */}
         <main className="flex-1 overflow-y-auto p-3 lg:p-4 space-y-3">
-          {activeTab === 'issue-invoice' || activeMenuItem === 'issue-invoice' ? (
-             <CreateInvoiceView onBack={() => handleSelectTab('customer-groups')} />
+          {activeTab === 'my-dashboard' ? (
+            <Dashboard 
+              pinnedItems={pinnedItems}
+              onRemovePin={(id) => handleTogglePin(id, '', 'definition')}
+              onOpenItem={(id) => handleSelectMenuItem(id)}
+            />
+          ) : activeTab === 'issue-invoice' || activeMenuItem === 'issue-invoice' ? (
+             <CreateInvoiceView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'issue-proforma' || activeMenuItem === 'issue-proforma' ? (
-             <CreateProformaInvoiceView onBack={() => handleSelectTab('customer-groups')} />
+             <CreateProformaInvoiceView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'create-opportunity' || activeMenuItem === 'create-opportunity' ? (
-            <CreateOpportunityView onBack={() => handleSelectTab('customer-groups')} />
+            <CreateOpportunityView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'sent-signal-metrics' || activeMenuItem === 'sent-signal-metrics' ? (
-            <SentSignalMetricsHistoryView onBack={() => handleSelectTab('customer-groups')} />
+            <SentSignalMetricsHistoryView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'received-signal-metrics' || activeMenuItem === 'received-signal-metrics' ? (
-            <ReceivedSignalMetricsHistoryView onBack={() => handleSelectTab('customer-groups')} />
+            <ReceivedSignalMetricsHistoryView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'campaign-metrics' || activeMenuItem === 'campaign-metrics' ? (
-            <CampaignMetricsHistoryView onBack={() => handleSelectTab('customer-groups')} />
+            <CampaignMetricsHistoryView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'operational-calendar' || activeMenuItem === 'operational-calendar' ? (
-            <OperationGanttView onBack={() => handleSelectTab('customer-groups')} />
+            <OperationGanttView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'pulse-ops-report' || activeMenuItem === 'pulse-ops-report' ? (
-            <PulseOperationalDashboard onBack={() => handleSelectTab('customer-groups')} />
+            <PulseOperationalDashboard onBack={() => handleSelectMenuItem('customer-groups')} />
+          ) : activeTab === 'media-ops-report' || activeMenuItem === 'media-ops-report' ? (
+            <MediaOperationalDashboard onBack={() => handleSelectMenuItem('customer-groups')} />
+          ) : activeTab === 'campaign-ops-report' || activeMenuItem === 'campaign-ops-report' ? (
+            <CampaignOperationalDashboard onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'media-metrics' || activeMenuItem === 'media-metrics' ? (
-            <MediaMetricsHistoryView onBack={() => handleSelectTab('customer-groups')} />
+            <MediaMetricsHistoryView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'signal-feedback' || activeMenuItem === 'signal-feedback' ? (
-            <ReceiveSignalView onBack={() => handleSelectTab('customer-groups')} />
+            <ReceiveSignalView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'send-signal' || activeMenuItem === 'send-signal' ? (
-            <SendSignalView onBack={() => handleSelectTab('customer-groups')} />
+            <SendSignalView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'create-campaign' || activeMenuItem === 'create-campaign' ? (
-            <CampaignDefinitionView onBack={() => handleSelectTab('customer-groups')} />
+            <CampaignDefinitionView onBack={() => handleSelectMenuItem('customer-groups')} />
+          ) : activeTab === 'crm-comprehensive-lead-report' || activeMenuItem === 'crm-comprehensive-lead-report' ? (
+            <ComprehensiveLeadReportView leads={leads} mediaList={mediaList} />
+          ) : activeTab === 'crm-timeline-report' || activeMenuItem === 'crm-timeline-report' ? (
+            <LeadTimelineReportView leads={leads} />
+          ) : activeTab === 'product-definition' || activeMenuItem === 'product-definition' ? (
+            <ProductDefinitionView />
+          ) : activeTab === 'product-pricing' || activeMenuItem === 'product-pricing' ? (
+            <ProductPricingView />
           ) : activeTab === 'signal-definition' || activeMenuItem === 'signal-definition' ? (
-            <SignalDefinitionView onBackToCustomerGroups={() => handleSelectTab('customer-groups')} />
+            <SignalDefinitionView 
+              mediaList={mediaList}
+              onBackToCustomerGroups={() => handleSelectMenuItem('customer-groups')} 
+            />
           ) : activeTab === 'media-definition' || activeMenuItem === 'media-definition' ? (
-            <MediaDefinitionView onBackToCustomerGroups={() => handleSelectTab('customer-groups')} />
+            <MediaDefinitionView 
+              mediaList={mediaList}
+              onUpdateMediaList={handleUpdateMediaList}
+              onBackToCustomerGroups={() => handleSelectMenuItem('customer-groups')} 
+            />
           ) : activeTab === 'deployment-management' || activeMenuItem === 'deployment-management' ? (
-            <DeploymentManagementView onBack={() => handleSelectTab('customer-groups')} />
+            <DeploymentManagementView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'maintenance-management' || activeMenuItem === 'maintenance-management' ? (
-            <MaintenanceManagementView onBack={() => handleSelectTab('customer-groups')} />
+            <MaintenanceManagementView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'failure-management' || activeMenuItem === 'failure-management' ? (
-            <FailureManagementView onBack={() => handleSelectTab('customer-groups')} />
+            <FailureManagementView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'toolbox-definition' || activeMenuItem === 'toolbox-definition' ? (
-            <ToolboxDefinitionView onBack={() => handleSelectTab('customer-groups')} />
+            <ToolboxDefinitionView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'req-deployment' || activeMenuItem === 'req-deployment' ? (
-            <DeploymentRequestView onBack={() => handleSelectTab('customer-groups')} />
+            <DeploymentRequestView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'req-maintenance' || activeMenuItem === 'req-maintenance' ? (
-            <MaintenanceRequestView onBack={() => handleSelectTab('customer-groups')} />
+            <MaintenanceRequestView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'req-repairs' || activeMenuItem === 'req-repairs' ? (
-            <RepairRequestView onBack={() => handleSelectTab('customer-groups')} />
+            <RepairRequestView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'rep-deployment' || activeMenuItem === 'rep-deployment' ? (
-            <DeploymentReportView onBack={() => handleSelectTab('customer-groups')} />
+            <DeploymentReportView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'rep-maintenance' || activeMenuItem === 'rep-maintenance' ? (
-            <MaintenanceReportView onBack={() => handleSelectTab('customer-groups')} />
+            <MaintenanceReportView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'rep-repairs' || activeMenuItem === 'rep-repairs' ? (
-            <RepairReportView onBack={() => handleSelectTab('customer-groups')} />
+            <RepairReportView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'target-calendar' ? (
-            <TargetCalendarView onBack={() => handleSelectTab('customer-groups')} />
+            <TargetCalendarView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'target-product-groups' ? (
-            <ProductGroupsTargetView onBack={() => handleSelectTab('customer-groups')} />
+            <ProductGroupsTargetView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'target-geo-groups' ? (
-            <GeographicGroupsTargetView onBack={() => handleSelectTab('customer-groups')} />
+            <GeographicGroupsTargetView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'target-team-members' ? (
-            <TeamMemberSettingsView onBack={() => handleSelectTab('customer-groups')} />
+            <TeamMemberSettingsView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'commission-tiers' ? (
-            <CommissionTiersView onBack={() => handleSelectTab('customer-groups')} />
+            <CommissionTiersView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'target-allocation' ? (
-            <TargetAllocationView onBack={() => handleSelectTab('customer-groups')} />
+            <TargetAllocationView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'commission-calculation' ? (
-            <CommissionCalculationView onBack={() => handleSelectTab('customer-groups')} />
+            <CommissionCalculationView onBack={() => handleSelectMenuItem('customer-groups')} />
           ) : activeTab === 'commission-payment-request' ? (
-            <CommissionPaymentRequestView onBack={() => handleSelectTab('customer-groups')} />
-          ) : activeTab === 'comprehensive-target-report' ? (
-            <ComprehensiveTargetReportView onBack={() => handleSelectTab('customer-groups')} />
-          ) : activeTab === 'team-achievement-report' ? (
-            <TeamAchievementReportView onBack={() => handleSelectTab('customer-groups')} />
-          ) : activeTab === 'commission-balance-report' ? (
-            <CommissionBalanceReportView onBack={() => handleSelectTab('customer-groups')} />
+            <CommissionPaymentRequestView onBack={() => handleSelectMenuItem('customer-groups')} />
+          ) : activeTab === 'comprehensive-target-commission-report' ? (
+            <ComprehensiveTargetCommissionReportView />
+          ) : activeTab === 'indirect-payroll-forecast' ? (
+            <IndirectPayrollForecastView onBack={() => handleSelectMenuItem('customer-groups')} />
+          ) : activeTab === 'other-income-expense-forecast' ? (
+            <OtherIncomeExpenseForecastView onBack={() => handleSelectMenuItem('customer-groups')} />
+          ) : activeTab === 'inflation-purchase-price-forecast' ? (
+            <InflationAndPurchasePriceForecastView onBack={() => handleSelectMenuItem('customer-groups')} />
+          ) : activeTab === 'secondary-exchange-research' ? (
+            <SecondaryExchangeRateResearchView onBack={() => handleSelectMenuItem('customer-groups')} />
+          ) : activeTab === 'sales-variance-control-report' ? (
+            <SalesVarianceControlReportView onBack={() => handleSelectMenuItem('customer-groups')} />
+          ) : activeTab === 'indirect-payroll-control-report' ? (
+            <IndirectPayrollControlReportView onBack={() => handleSelectMenuItem('customer-groups')} />
+          ) : activeTab === 'other-income-expense-control-report' ? (
+            <OtherIncomeExpenseControlReportView onBack={() => handleSelectMenuItem('customer-groups')} />
+          ) : activeTab === 'budgetary-pl-statement' ? (
+            <BudgetaryPLStatementView onBack={() => handleSelectMenuItem('customer-groups')} />
+          ) : activeTab === 'price-increase-control' ? (
+            <PriceIncreaseControlReportView onBack={() => handleSelectMenuItem('customer-groups')} />
+          ) : activeTab === 'create-process' ? (
+            <ProcessDefinitionView 
+              processes={processDefinitions} 
+              onUpdateProcesses={setProcessDefinitions} 
+            />
+          ) : activeTab === 'bpms-access-levels' ? (
+            <BPMSAccessLevelsView 
+              processes={processDefinitions}
+              onBack={() => handleSelectMenuItem('customer-groups')}
+            />
+          ) : activeTab === 'bpms-ops-dashboard' ? (
+            <ProcessDashboardView 
+              definitions={processDefinitions}
+              onSelectProcess={(id) => {
+                setSelectedProcessId(id);
+                setActiveTab('process-instances');
+              }}
+            />
+          ) : activeTab === 'process-instances' && selectedProcessId ? (
+            <ProcessInstancesView 
+              definition={processDefinitions.find(d => String(d.id) === String(selectedProcessId))!}
+              instances={processInstances.filter(i => String(i.processDefinitionId) === String(selectedProcessId))}
+              onBack={() => handleSelectMenuItem('bpms-ops-dashboard')}
+              onCreateNew={() => {
+                const newInst: ProcessInstance = {
+                  id: String(Date.now()),
+                  processDefinitionId: selectedProcessId,
+                  title: `اجرای جدید - ${new Date().toLocaleDateString('fa-IR')}`,
+                  createdAt: '۱۴۰۵/۰۶/۲۵',
+                  lastUpdate: '۱۴۰۵/۰۶/۲۵',
+                  currentStage: 'مرحله اول',
+                  progress: 0,
+                  responsible: 'کاربر فعلی'
+                };
+                setProcessInstances([...processInstances, newInst]);
+              }}
+            />
+          ) : activeTab.startsWith('treasury-') ? (
+            activeTab === 'treasury-ops-petty-cash' ? (
+              <PettyCashOperationView onBack={() => handleSelectMenuItem('customer-groups')} />
+            ) : activeTab === 'treasury-ops-main' ? (
+              <TreasuryOperationsView onBack={() => handleSelectMenuItem('customer-groups')} />
+            ) : activeTab === 'treasury-ops-check-incoming' || activeTab === 'treasury-ops-check-outgoing' ? (
+              <CheckOperationsView type={activeTab} onBack={() => handleSelectMenuItem('customer-groups')} />
+            ) : activeTab.includes('report') ? (
+              <TreasuryReportsView type={activeTab} onBack={() => handleSelectMenuItem('customer-groups')} />
+            ) : (
+              <TreasuryDefinitionsView type={activeTab} onBack={() => handleSelectMenuItem('customer-groups')} />
+            )
+          ) : activeMenuItem === 'hr-smart-attendance' ? (
+            <SmartAttendancePage onBack={() => setActiveMenuItem('customer-groups')} />
+          ) : activeMenuItem === 'hr-qr-display' ? (
+            <AttendanceQrDisplayPage />
+          ) : activeMenuItem === 'hr-location-definition' ? (
+            <LocationDefinitionPage />
+          ) : activeMenuItem === 'hr-attendance-log' ? (
+            <AttendanceReportsPage />
+          ) : activeTab === 'bpms-workflow-analysis' || activeMenuItem === 'bpms-workflow-analysis' ? (
+            <WorkflowAnalysisPage />
           ) : (
             <>
               {/* Top Breadcrumb & Action bar with DEV badge matching screenshot */}

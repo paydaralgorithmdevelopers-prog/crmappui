@@ -33,6 +33,7 @@ interface Team {
   priority: 'high' | 'medium' | 'low';
   manager: string;
   targetRegion: string;
+  share: number;
   expectedAnnualValue: number;
   assignedMemberIds: string[];
   createdAt: string;
@@ -63,6 +64,7 @@ const initialTeams: Team[] = [
     priority: 'high',
     manager: 'مهندس احمدی',
     targetRegion: 'سراسری',
+    share: 100,
     expectedAnnualValue: 85000000000,
     assignedMemberIds: ['member-1', 'member-2'],
     createdAt: '۱۴۰۴/۰۸/۱۰',
@@ -78,6 +80,7 @@ const initialTeams: Team[] = [
     priority: 'high',
     manager: 'علیرضا رفیعی',
     targetRegion: 'اصفهان و خوزستان',
+    share: 45,
     expectedAnnualValue: 45000000000,
     assignedMemberIds: ['member-1'],
     createdAt: '۱۴۰۴/۰۹/۰۱',
@@ -137,10 +140,32 @@ export const TeamMemberSettingsView: React.FC<{ onBack: () => void }> = ({ onBac
   });
 
   // Local state for inline edits in the bottom table
-  const [memberSettings, setMemberSettings] = useState<Record<string, { target: number; commission: number }>>({
-    'member-1': { target: 1200000000, commission: 5 },
-    'member-2': { target: 800000000, commission: 3.5 },
+  const [memberSettings, setMemberSettings] = useState<Record<string, { target: number; commission: number; share: number; minAchievement: number; calculationModel: string; targetModel: string; position: string; multiplier: number }>>({
+    'member-1': { target: 1200000000, commission: 5, share: 60, minAchievement: 70, calculationModel: '1', targetModel: '1', position: 'کارشناس فروش', multiplier: 1 },
+    'member-2': { target: 800000000, commission: 3.5, share: 40, minAchievement: 75, calculationModel: '2', targetModel: '1', position: 'مدیر منطقه', multiplier: 1 },
   });
+
+  const commissionModels = [
+    { id: '1', title: 'صدور فاکتور' },
+    { id: '2', title: 'صدور فاکتور و درصد تسویه' },
+    { id: '3', title: 'صدور فاکتور و تسویه کامل' },
+    { id: '4', title: 'صدور فاکتور و خروج انبار' },
+    { id: '5', title: 'صدور فاکتور و (تسویه کامل یا خروج انبار)' },
+  ];
+
+  const getTeamSiblingsTotalShare = (parentId: string | null) => {
+    return teams
+      .filter(t => t.parentId === parentId)
+      .reduce((sum, t) => sum + (t.share || 0), 0);
+  };
+
+  const getTeamMembersTotalShare = (teamId: string) => {
+    const team = teams.find(t => t.id === teamId);
+    if (!team) return 0;
+    return team.assignedMemberIds.reduce((sum, memberId) => {
+      return sum + (memberSettings[memberId]?.share || 0);
+    }, 0);
+  };
 
   // Find currently selected team
   const currentTeam = teams.find((t) => t.id === selectedTeamId) || teams[0];
@@ -170,6 +195,7 @@ export const TeamMemberSettingsView: React.FC<{ onBack: () => void }> = ({ onBac
       priority: 'medium',
       manager: 'نامشخص',
       targetRegion: 'نامشخص',
+      share: 0,
       expectedAnnualValue: 0,
       assignedMemberIds: [],
       createdAt: '۱۴۰۵/۱۱/۱۸',
@@ -221,11 +247,11 @@ export const TeamMemberSettingsView: React.FC<{ onBack: () => void }> = ({ onBac
     }));
   };
 
-  const handleMemberSettingChange = (memberId: string, field: 'target' | 'commission', value: number) => {
+  const handleMemberSettingChange = (memberId: string, field: 'target' | 'commission' | 'share' | 'minAchievement' | 'calculationModel' | 'targetModel' | 'position' | 'multiplier', value: any) => {
     setMemberSettings(prev => ({
       ...prev,
       [memberId]: {
-        ...(prev[memberId] || { target: 0, commission: 0 }),
+        ...(prev[memberId] || { target: 0, commission: 0, share: 0, minAchievement: 0, calculationModel: '1', targetModel: '1', position: '', multiplier: 1 }),
         [field]: value
       }
     }));
@@ -305,6 +331,33 @@ export const TeamMemberSettingsView: React.FC<{ onBack: () => void }> = ({ onBac
                   onChange={(e) => handleTeamChange(team.id, 'targetRegion', e.target.value)}
                   className="bg-transparent border-none focus:ring-0 p-0 text-slate-600 w-24 text-center"
                 />
+              </div>
+            </div>
+
+            <div className="hidden lg:flex items-center gap-3 ml-4 relative">
+              <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded border transition-all ${
+                getTeamSiblingsTotalShare(team.parentId) > 100 
+                  ? 'bg-rose-50 border-rose-300 ring-2 ring-rose-100' 
+                  : 'bg-slate-100/50 border-slate-200'
+              }`}>
+                <span className="text-[10px] text-slate-500">سهم تیم:</span>
+                <input 
+                  type="number"
+                  value={team.share}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={(e) => handleTeamChange(team.id, 'share', Number(e.target.value))}
+                  className={`bg-transparent border-none focus:ring-0 p-0 w-8 text-center text-[11px] font-bold ${
+                    getTeamSiblingsTotalShare(team.parentId) > 100 ? 'text-rose-600' : 'text-rose-700'
+                  }`}
+                />
+                <span className="text-[10px] text-slate-400">%</span>
+                
+                {getTeamSiblingsTotalShare(team.parentId) > 100 && (
+                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-rose-600 text-white text-[9px] px-2 py-1 rounded shadow-lg z-50 whitespace-nowrap flex items-center gap-1">
+                    <HelpCircle className="w-3 h-3" />
+                    <span>مجموع تیم‌ها: {getTeamSiblingsTotalShare(team.parentId)}%</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -439,6 +492,12 @@ export const TeamMemberSettingsView: React.FC<{ onBack: () => void }> = ({ onBac
             <div className="flex items-center gap-2">
               <span className="font-bold text-xs text-slate-800">تنظیمات و انتساب اعضای تیم: <span className="text-rose-700">{currentTeam.title}</span></span>
               <span className="bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full text-[10px] font-bold border border-sky-200">{currentTeam.assignedMemberIds.length} عضو منتسب</span>
+              <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded border text-[10px] font-bold ${
+                getTeamMembersTotalShare(currentTeam.id) > 100 ? 'bg-rose-50 border-rose-200 text-rose-700' : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+              }`}>
+                مجموع سهم اعضا: {getTeamMembersTotalShare(currentTeam.id)}%
+                {getTeamMembersTotalShare(currentTeam.id) > 100 && <HelpCircle className="w-3 h-3" />}
+              </div>
             </div>
           </div>
           
@@ -474,6 +533,12 @@ export const TeamMemberSettingsView: React.FC<{ onBack: () => void }> = ({ onBac
                     <th className="py-2.5 px-4 w-12 text-center">ردیف</th>
                     <th className="py-2.5 px-4 w-10 text-center">انتساب</th>
                     <th className="py-2.5 px-4">اطلاعات پرسنلی</th>
+                    <th className="py-2.5 px-4 text-center">سمت</th>
+                    <th className="py-2.5 px-4 text-center">ضریب پورسانت</th>
+                    <th className="py-2.5 px-4 text-center">سهم از تارگت (%)</th>
+                    <th className="py-2.5 px-4 text-center">حداقل تحقق (%)</th>
+                    <th className="py-2.5 px-4 text-center">مدل محاسبه تارگت</th>
+                    <th className="py-2.5 px-4 text-center">مدل محاسبه پورسانت</th>
                     <th className="py-2.5 px-4">واحد سازمانی</th>
                   </tr>
                 </thead>
@@ -498,8 +563,97 @@ export const TeamMemberSettingsView: React.FC<{ onBack: () => void }> = ({ onBac
                         <td className="py-2.5 px-4">
                           <div className="flex flex-col">
                             <span className="font-bold text-slate-800">{member.name}</span>
-                            <span className="text-[10px] text-slate-400 font-mono">#{member.code} • {member.role}</span>
+                            <span className="text-[10px] text-slate-400 font-mono">#{member.code}</span>
                           </div>
+                        </td>
+                        <td className="py-2.5 px-4 text-center">
+                          {isAssigned ? (
+                            <input 
+                              type="text"
+                              value={memberSettings[member.id]?.position || member.role}
+                              onChange={(e) => handleMemberSettingChange(member.id, 'position', e.target.value)}
+                              className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-center text-[11px] text-slate-700 focus:ring-1 focus:ring-indigo-500 outline-hidden"
+                            />
+                          ) : (
+                            <span className="text-slate-500">{member.role}</span>
+                          )}
+                        </td>
+                        <td className="py-2.5 px-4 text-center">
+                          {isAssigned ? (
+                            <div className="flex items-center justify-center gap-1">
+                              <input 
+                                type="number"
+                                step="0.1"
+                                value={memberSettings[member.id]?.multiplier ?? 1}
+                                onChange={(e) => handleMemberSettingChange(member.id, 'multiplier', Number(e.target.value))}
+                                className="w-16 bg-white border border-slate-200 rounded px-2 py-1 text-center font-bold text-[11px] text-emerald-700 focus:ring-1 focus:ring-emerald-500 outline-hidden"
+                              />
+                            </div>
+                          ) : (
+                            <span className="text-slate-300">-</span>
+                          )}
+                        </td>
+                        <td className="py-2.5 px-4 text-center">
+                          {isAssigned ? (
+                            <div className="flex items-center justify-center gap-1">
+                              <input 
+                                type="number"
+                                value={memberSettings[member.id]?.share || 0}
+                                onChange={(e) => handleMemberSettingChange(member.id, 'share', Number(e.target.value))}
+                                className={`w-16 bg-white border rounded px-2 py-1 text-center font-bold text-[11px] focus:ring-1 outline-hidden ${
+                                  getTeamMembersTotalShare(currentTeam.id) > 100 ? 'border-rose-300 text-rose-600 focus:ring-rose-500' : 'border-slate-200 text-indigo-700 focus:ring-indigo-500'
+                                }`}
+                              />
+                              <span className="text-slate-400">%</span>
+                            </div>
+                          ) : (
+                            <span className="text-slate-300">-</span>
+                          )}
+                        </td>
+                        <td className="py-2.5 px-4 text-center">
+                          {isAssigned ? (
+                            <div className="flex items-center justify-center gap-1">
+                              <input 
+                                type="number"
+                                value={memberSettings[member.id]?.minAchievement || 0}
+                                onChange={(e) => handleMemberSettingChange(member.id, 'minAchievement', Number(e.target.value))}
+                                className="w-16 bg-white border border-slate-200 rounded px-2 py-1 text-center font-bold text-[11px] text-amber-700 focus:ring-1 focus:ring-amber-500 outline-hidden"
+                              />
+                              <span className="text-slate-400">%</span>
+                            </div>
+                          ) : (
+                            <span className="text-slate-300">-</span>
+                          )}
+                        </td>
+                        <td className="py-2.5 px-4 text-center">
+                          {isAssigned ? (
+                            <select
+                              value={memberSettings[member.id]?.targetModel || '1'}
+                              onChange={(e) => handleMemberSettingChange(member.id, 'targetModel', e.target.value)}
+                              className="bg-white border border-slate-200 rounded px-2 py-1 text-[11px] text-amber-700 font-medium focus:ring-1 focus:ring-amber-500 outline-hidden w-full max-w-[180px]"
+                            >
+                              {commissionModels.map(model => (
+                                <option key={model.id} value={model.id}>{model.title}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            <span className="text-slate-300">-</span>
+                          )}
+                        </td>
+                        <td className="py-2.5 px-4 text-center">
+                          {isAssigned ? (
+                            <select
+                              value={memberSettings[member.id]?.calculationModel || '1'}
+                              onChange={(e) => handleMemberSettingChange(member.id, 'calculationModel', e.target.value)}
+                              className="bg-white border border-slate-200 rounded px-2 py-1 text-[11px] text-indigo-700 font-medium focus:ring-1 focus:ring-indigo-500 outline-hidden w-full max-w-[180px]"
+                            >
+                              {commissionModels.map(model => (
+                                <option key={model.id} value={model.id}>{model.title}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            <span className="text-slate-300">-</span>
+                          )}
                         </td>
                         <td className="py-2.5 px-4 text-slate-50">{member.department}</td>
                       </tr>

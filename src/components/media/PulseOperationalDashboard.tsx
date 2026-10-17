@@ -292,6 +292,51 @@ export const PulseOperationalDashboard: React.FC<{ onBack: () => void }> = ({ on
             ))}
           </div>
         </div>
+
+        {/* List of Recorded Records Table */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
+            <HistoryIcon className="w-4 h-4 text-indigo-600" />
+            <h3 className="font-bold text-slate-800 text-sm">فهرست سوابق ثبت شده (بر اساس تاریخ)</h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-right text-[11px]">
+              <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
+                <tr>
+                  <th className="px-4 py-3 font-bold">شناسه رکورد</th>
+                  <th className="px-4 py-3 font-bold">تاریخ و زمان ثبت</th>
+                  <th className="px-4 py-3 font-bold">کاربر ثبت‌کننده</th>
+                  <th className="px-4 py-3 font-bold">مقدار شاخص (KPI)</th>
+                  <th className="px-4 py-3 font-bold">وضعیت</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {[
+                  { id: 'REC-102', date: '۱۴۰۳/۰۱/۳۰', time: '۱۶:۴۵', user: 'مهندس احمدی', value: '۸۵', status: 'نهایی شده' },
+                  { id: 'REC-095', date: '۱۴۰۳/۰۱/۲۰', time: '۰۹:۱۵', user: 'سارا رضایی', value: '۶۵', status: 'نهایی شده' },
+                  { id: 'REC-088', date: '۱۴۰۳/۰۱/۱۰', time: '۱۱:۳۰', user: 'مهندس احمدی', value: '۴۵', status: 'نهایی شده' },
+                ].map((row, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-4 py-3 font-mono text-slate-600">{row.id}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-col">
+                        <span className="text-slate-800">{row.date}</span>
+                        <span className="text-slate-400 text-[10px]">{row.time}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 font-medium text-slate-700">{row.user}</td>
+                    <td className="px-4 py-3 font-bold text-indigo-600">{row.value}</td>
+                    <td className="px-4 py-3">
+                      <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-[9px] font-bold border border-emerald-100">
+                        {row.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     );
   };

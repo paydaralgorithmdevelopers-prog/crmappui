@@ -99,14 +99,6 @@ export const CommissionCalculationView: React.FC<{ onBack: () => void }> = ({ on
             <option>همه تیم‌ها</option>
           </select>
         </div>
-        <div className="space-y-1.5">
-          <label className="text-[10px] font-bold text-slate-500 mr-1">نوع ارز</label>
-          <select value={currency} onChange={e => setCurrency(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs">
-            <option value="ریال">ریال (IRR)</option>
-            <option value="دلار">دلار (USD)</option>
-            <option value="یورو">یورو (EUR)</option>
-          </select>
-        </div>
         <div className="lg:col-span-1 space-y-1.5 relative">
           <label className="text-[10px] font-bold text-slate-500 mr-1">جستجوی کارشناس</label>
           <Search className="absolute right-3 top-8 w-3.5 h-3.5 text-slate-400" />
